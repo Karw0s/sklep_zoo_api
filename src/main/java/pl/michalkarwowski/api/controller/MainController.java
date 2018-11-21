@@ -16,14 +16,14 @@ public class MainController {
     @Autowired
     private UserRepository userRepository;
 
-    public @ResponseBody String addNewUser(@RequestParam String name, @RequestParam String email){
-
-        User n = new User();
-        n.setName(name);
-        n.setEmail(email);
-        userRepository.save(n);
-        return "Saved";
-    }
+//    public @ResponseBody String addNewUser(@RequestParam String name, @RequestParam String email){
+//
+//        User n = new User();
+//        n.setName(name);
+//        n.setEmail(email);
+//        userRepository.save(n);
+//        return "Saved";
+//    }
 
     @GetMapping(path="/all")
     public @ResponseBody Iterable<User> getAllUsers() {
