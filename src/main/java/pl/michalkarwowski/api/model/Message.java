@@ -1,7 +1,10 @@
 package pl.michalkarwowski.api.model;
 
+import lombok.Data;
+
 import java.util.UUID;
 
+@Data
 public class Message {
     private String id = UUID.randomUUID().toString();
     private String content;
@@ -9,19 +12,5 @@ public class Message {
         this.content = content;
     }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }
