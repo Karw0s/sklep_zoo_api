@@ -22,11 +22,13 @@ public class FakturaServiceImp implements FakturaService {
 
     @Override
     public Faktura addNewPosition(Towar towar, String idFaktura, Integer ilosc) {
+        Faktura faktura = fakturaRepositiory.findByNr(idFaktura);
         PozycjaFaktury pozycjaFaktury = new PozycjaFaktury();
-        pozycjaFaktury.setFaktura(fakturaRepositiory.findByNr(idFaktura));
+        pozycjaFaktury.setFaktura(faktura);
         pozycjaFaktury.setTowar(towar);
         pozycjaFaktury.setIlosc(ilosc);
-        pozycjaFakturyRepository.save(pozycjaFaktury);
-        return fakturaRepositiory.findByNr(idFaktura);
+        pozycjaFaktury = pozycjaFakturyRepository.save(pozycjaFaktury);
+        faktura.getPozycjaFaktury().add(pozycjaFaktury);
+        return faktura;
     }
 }
