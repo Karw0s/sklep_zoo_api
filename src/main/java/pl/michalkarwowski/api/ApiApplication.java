@@ -24,8 +24,8 @@ public class ApiApplication {
                     .authorizeRequests()
                     .antMatchers("/index.html", "/", "/home", "/login").permitAll()
                     .anyRequest().authenticated()
-                    .and().csrf()
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                    .and().csrf().disable();
+//                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
         }
     }
 

@@ -1,5 +1,6 @@
 package pl.michalkarwowski.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -16,7 +17,7 @@ public class Towar {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String name;
-    private BigDecimal price;
-    private BigDecimal VAT;
+    private Double price;
+    private Integer VAT;
     private String JM;
 }
