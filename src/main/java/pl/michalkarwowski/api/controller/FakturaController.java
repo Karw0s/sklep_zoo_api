@@ -3,14 +3,12 @@ package pl.michalkarwowski.api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.model.Faktura;
 import pl.michalkarwowski.api.model.Towar;
 import pl.michalkarwowski.api.service.FakturaService;
 
-@RestController
+@RestController("/faktura")
 public class FakturaController {
 
     private final FakturaService fakturaService;
@@ -20,11 +18,26 @@ public class FakturaController {
         this.fakturaService = fakturaService;
     }
 
-    @PostMapping("/faktura")
-    public ResponseEntity<Faktura> addTowar(@RequestBody Towar towar,
-                                            @RequestBody String idFaktura,
-                                            @RequestBody Integer ilosc) {
+    @PostMapping("/addTowar")
+    public ResponseEntity<Faktura> addPozycjaToFaktura(@RequestBody String idFaktura,
+                                                       @RequestBody Towar towar,
+                                                       @RequestBody Integer ilosc) {
         return new ResponseEntity<>(fakturaService.addNewPosition(towar, idFaktura, ilosc), HttpStatus.OK);
+    }
 
+    @GetMapping("/getNextFakturaId")
+    public ResponseEntity<String> getNextFakturaId() {
+        return null;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Faktura> createFaktura(@RequestBody Faktura faktura) {
+        return null;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Faktura> getFaktura(@PathVariable String id) {
+        Faktura faktura = fakturaService.getFaktura(id);
+        return new ResponseEntity<>(faktura, HttpStatus.OK);
     }
 }

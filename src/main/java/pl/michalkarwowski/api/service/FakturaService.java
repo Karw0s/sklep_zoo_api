@@ -5,4 +5,5 @@ import pl.michalkarwowski.api.model.Towar;
 
 public interface FakturaService {
     Faktura addNewPosition(Towar towar, String idFaktura, Integer ilosc);
+    Faktura getFaktura(String nrFaktury);
 }

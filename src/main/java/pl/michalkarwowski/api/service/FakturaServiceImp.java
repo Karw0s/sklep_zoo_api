@@ -31,4 +31,9 @@ public class FakturaServiceImp implements FakturaService {
         faktura.getPozycjaFaktury().add(pozycjaFaktury);
         return faktura;
     }
+
+    @Override
+    public Faktura getFaktura(String nrFaktury) {
+        return fakturaRepositiory.findByNr(nrFaktury);
+    }
 }
