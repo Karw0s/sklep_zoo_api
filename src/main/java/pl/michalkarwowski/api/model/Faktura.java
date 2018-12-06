@@ -12,7 +12,7 @@ import java.util.List;
 public class Faktura {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String Nr;
+    private String nr;
     @OneToMany(mappedBy = "faktura")
     private List<PozycjaFaktury> pozycjaFaktury = new ArrayList<>();
     private Date dataWystawienia;
