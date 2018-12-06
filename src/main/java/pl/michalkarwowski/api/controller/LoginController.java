@@ -9,9 +9,9 @@ import java.security.Principal;
 @RestController
 public class LoginController {
 
-    @RequestMapping("/user")
-    @CrossOrigin(origins="*", maxAge=3600)
-    public Principal user(Principal user) {
-        return user;
-    }
+//    @RequestMapping("/user")
+//    @CrossOrigin(origins="*", maxAge=3600)
+//    public Principal user(Principal user) {
+//        return user;
+//    }
 }
