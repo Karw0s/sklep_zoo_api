@@ -83,7 +83,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(detailsService).passwordEncoder(User.PASSWORD_ENCODER);
+        auth.userDetailsService(detailsService).passwordEncoder(ApplicationUser.PASSWORD_ENCODER);
     }
 
     @Override

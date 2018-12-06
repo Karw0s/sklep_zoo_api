@@ -1,10 +1,10 @@
 package pl.michalkarwowski.api.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import pl.michalkarwowski.api.model.User;
+import pl.michalkarwowski.api.model.ApplicationUser;
 
-public interface UserRepository extends CrudRepository<User, Long>{
+public interface UserRepository extends CrudRepository<ApplicationUser, Long>{
 
-    User findByUsername(String username);
+    ApplicationUser findByUsername(String username);
 
 }
