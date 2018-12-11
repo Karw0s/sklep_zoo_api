@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.model.Faktura;
-import pl.michalkarwowski.api.model.Towar;
+import pl.michalkarwowski.api.model.Product;
 import pl.michalkarwowski.api.service.FakturaService;
 
 @RestController("/faktura")
@@ -18,11 +18,11 @@ public class FakturaController {
         this.fakturaService = fakturaService;
     }
 
-    @PostMapping("/addTowar")
+    @PostMapping("/addProduct")
     public ResponseEntity<Faktura> addPozycjaToFaktura(@RequestBody String idFaktura,
-                                                       @RequestBody Towar towar,
+                                                       @RequestBody Product product,
                                                        @RequestBody Integer ilosc) {
-        return new ResponseEntity<>(fakturaService.addNewPosition(towar, idFaktura, ilosc), HttpStatus.OK);
+        return new ResponseEntity<>(fakturaService.addNewPosition(product, idFaktura, ilosc), HttpStatus.OK);
     }
 
     @GetMapping("/getNextFakturaId")

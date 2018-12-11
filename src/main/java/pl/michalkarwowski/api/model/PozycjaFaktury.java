@@ -16,7 +16,7 @@ public class PozycjaFaktury {
     @JoinColumn(name = "fk_faktura")
     private Faktura faktura;
     @ManyToOne
-    @JoinColumn(name = "fk_towar")
-    private Towar towar;
+    @JoinColumn(name = "fk_product")
+    private Product product;
     private Integer ilosc;
 }

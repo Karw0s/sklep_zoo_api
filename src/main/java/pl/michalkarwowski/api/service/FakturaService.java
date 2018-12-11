@@ -1,9 +1,9 @@
 package pl.michalkarwowski.api.service;
 
 import pl.michalkarwowski.api.model.Faktura;
-import pl.michalkarwowski.api.model.Towar;
+import pl.michalkarwowski.api.model.Product;
 
 public interface FakturaService {
-    Faktura addNewPosition(Towar towar, String idFaktura, Integer ilosc);
+    Faktura addNewPosition(Product product, String idFaktura, Integer ilosc);
     Faktura getFaktura(String nrFaktury);
 }
