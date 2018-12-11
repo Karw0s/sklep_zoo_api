@@ -1,5 +1,7 @@
 package pl.michalkarwowski.api.User;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,8 +23,14 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody ApplicationUser user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        applicationUserRepository.save(user);
+    public ResponseEntity<String> signUp(@RequestBody ApplicationUser user) {
+        ApplicationUser user2= applicationUserRepository.findByUsername(user.getUsername());
+        if(user2 == null ){
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            applicationUserRepository.save(user);
+            return new ResponseEntity<>("user registered successfully", HttpStatus.CREATED);
+        }else {
+            return new ResponseEntity<>("User exists",HttpStatus.OK);
+        }
     }
 }
