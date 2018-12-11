@@ -4,5 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 import pl.michalkarwowski.api.model.InvoicePosition;
 
 public interface InvoicePositionRepository extends CrudRepository<InvoicePosition, Integer> {
-    InvoicePosition findAllByFaktura_Nr(String nrFaktury);
+    InvoicePosition findAllByInvoice(String invoiceID);
 }
