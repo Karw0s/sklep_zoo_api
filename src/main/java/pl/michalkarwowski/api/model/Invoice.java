@@ -9,13 +9,13 @@ import java.util.List;
 
 @Data
 @Entity
-public class Faktura {
+public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String nr;
-    @OneToMany(mappedBy = "faktura")
-    private List<PozycjaFaktury> pozycjaFaktury = new ArrayList<>();
-    private Date dataWystawienia;
+    @OneToMany(mappedBy = "invoice")
+    private List<InvoicePosition> invoicePosition = new ArrayList<>();
+    private Date dateOfIssue;
 
 
 }

@@ -6,17 +6,17 @@ import javax.persistence.*;
 
 @Data
 @Entity
-public class PozycjaFaktury {
+public class InvoicePosition {
 
 
     @Id
     @GeneratedValue
     private Integer lp;
     @ManyToOne
-    @JoinColumn(name = "fk_faktura")
-    private Faktura faktura;
+    @JoinColumn(name = "fk_invoice")
+    private Invoice invoice;
     @ManyToOne
     @JoinColumn(name = "fk_product")
     private Product product;
-    private Integer ilosc;
+    private Integer amount;
 }
