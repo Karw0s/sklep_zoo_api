@@ -1,4 +1,4 @@
-package pl.michalkarwowski.api;
+package pl.michalkarwowski.api.security.config;
 
 public class SecurityConstants {
     public static final String SECRET = "SecretKeyToGenJWTs";

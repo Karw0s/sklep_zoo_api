@@ -25,7 +25,4 @@ public class ApplicationUser {
     private String lastName;
 
 
-    private String[] roles;
-
-
 }

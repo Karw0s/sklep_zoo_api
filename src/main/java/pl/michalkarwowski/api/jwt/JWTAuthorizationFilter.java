@@ -1,4 +1,4 @@
-package pl.michalkarwowski.api;
+package pl.michalkarwowski.api.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static pl.michalkarwowski.api.SecurityConstants.HEADER_STRING;
-import static pl.michalkarwowski.api.SecurityConstants.SECRET;
-import static pl.michalkarwowski.api.SecurityConstants.TOKEN_PREFIX;
+import static pl.michalkarwowski.api.security.config.SecurityConstants.HEADER_STRING;
+import static pl.michalkarwowski.api.security.config.SecurityConstants.SECRET;
+import static pl.michalkarwowski.api.security.config.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 

@@ -1,4 +1,4 @@
-package pl.michalkarwowski.api;
+package pl.michalkarwowski.api.jwt;
 
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-import static pl.michalkarwowski.api.SecurityConstants.*;
+import static pl.michalkarwowski.api.security.config.SecurityConstants.*;
 
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {

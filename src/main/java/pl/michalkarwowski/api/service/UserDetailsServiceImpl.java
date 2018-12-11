@@ -1,4 +1,4 @@
-package pl.michalkarwowski.api.User;
+package pl.michalkarwowski.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.api.repository.ApplicationUserRepository;
 import pl.michalkarwowski.api.model.ApplicationUser;
 
 import static java.util.Collections.emptyList;

@@ -1,4 +1,4 @@
-package pl.michalkarwowski.api.User;
+package pl.michalkarwowski.api.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import pl.michalkarwowski.api.model.ApplicationUser;

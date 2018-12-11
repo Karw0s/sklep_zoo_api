@@ -1,4 +1,4 @@
-package pl.michalkarwowski.api;
+package pl.michalkarwowski.api.jwt;
 
 import lombok.Builder;
 import lombok.Data;
