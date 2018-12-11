@@ -14,8 +14,13 @@ public class Towar {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    private String catalogNumber;
     private String name;
-    private Double price;
-    private Integer VAT;
-    private String JM;
+    private String manufacturer;
+    private String unitOfMeasure;
+    private Double amount;
+    private Double priceNetto;
+    private Double priceBrutto;
+    private Integer vat;
+    private String pkiwCode;
 }
