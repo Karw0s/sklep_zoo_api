@@ -62,6 +62,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(exp))
                 .sign(HMAC512(SECRET.getBytes()));
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        res.addHeader("Content-Type", "application/json");
 
         AuthenticationDto authenticationDto = new AuthenticationDto.AuthenticationDtoBuilder()
                 .exp(Long.toString(exp))
