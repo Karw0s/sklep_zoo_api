@@ -5,10 +5,11 @@ import pl.michalkarwowski.api.model.Product;
 import java.util.List;
 
 public interface ProductService {
-    Product addNewProduct(Product product);
-    List<Product> getProducts();
+    Product addNewProduct(Product product, String username);
+    List<Product> addProductList(List<Product> productList, String username);
+    List<Product> getUserProducts(String username);
     Product getProduct(String name);
-    Product updateProduct(Integer id, Product product);
-    Product getProduct(Integer id);
-    void deleteProduct(Integer id);
+    Product updateProduct(Product product, String username);
+    Product getProduct(Integer id, String username);
+    boolean deleteProduct(Integer id, String username);
 }
