@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.michalkarwowski.api.dto.SingleProductDto;
 import pl.michalkarwowski.api.model.Product;
 import pl.michalkarwowski.api.service.ProductService;
 
@@ -32,6 +33,10 @@ public class ProductController {
         if (product2 == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+//        SingleProductDto result = SingleProductDto.builder()
+//                .result(product2)
+//                .error(null)
+//                .build();
         return new ResponseEntity<>(product2, HttpStatus.OK);
     }
 

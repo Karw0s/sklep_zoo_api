@@ -12,10 +12,20 @@ import java.util.List;
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String nr;
+    private String id;
+
+    private String number;
+    private Date saleDate;
+    private Date issueDate;
+    private String paymentType;
+    @ManyToOne
+    private Client seller;
+    @ManyToOne
+    private Client buyer;
     @OneToMany(mappedBy = "invoice")
-    private List<InvoicePosition> invoicePosition = new ArrayList<>();
-    private Date dateOfIssue;
+    private List<InvoicePosition> positions = new ArrayList<>();
+
+
 
 
 }

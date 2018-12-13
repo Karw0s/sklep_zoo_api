@@ -22,18 +22,18 @@ public class InvoiceServiceImp implements InvoiceService {
 
     @Override
     public Invoice addNewPosition(Product product, String invoiceID, Integer amount) {
-        Invoice invoice = invoiceRepository.findByNr(invoiceID);
-        InvoicePosition invoicePosition = new InvoicePosition();
-        invoicePosition.setInvoice(invoice);
-        invoicePosition.setProduct(product);
-        invoicePosition.setAmount(amount);
-        invoicePosition = invoicePositionRepository.save(invoicePosition);
-        invoice.getInvoicePosition().add(invoicePosition);
-        return invoice;
+//        Invoice invoice = invoiceRepository.findByNr(invoiceID);
+//        InvoicePosition invoicePosition = new InvoicePosition();
+//        invoicePosition.setInvoice(invoice);
+//        invoicePosition.setProduct(product);
+//        invoicePosition.setAmount(amount);
+//        invoicePosition = invoicePositionRepository.save(invoicePosition);
+//        invoice.getInvoicePosition().add(invoicePosition);
+        return null;
     }
 
     @Override
     public Invoice getInvoice(String invoiceNumber) {
-        return invoiceRepository.findByNr(invoiceNumber);
+        return invoiceRepository.getById(invoiceNumber);
     }
 }

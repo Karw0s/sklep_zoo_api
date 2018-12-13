@@ -18,5 +18,8 @@ public class InvoicePosition {
     @ManyToOne
     @JoinColumn(name = "fk_product")
     private Product product;
-    private Integer amount;
+    private Integer quantity;
+    private Double nettoValue;      // amount * productNettoPrice
+    private Double bruttoValue;     // nettoValue + tax * nettoValue
+    private Double totalTaxValue;   // tax * nettoValue
 }

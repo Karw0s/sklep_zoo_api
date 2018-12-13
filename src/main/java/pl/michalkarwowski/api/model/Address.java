@@ -14,9 +14,8 @@ public class Address {
     @GeneratedValue
     long id;
     private String street;
-    private String homeNumber;
     private String zipCode;
     private String city;
-    private String province;    //województwo
+    private String country;
 
 }

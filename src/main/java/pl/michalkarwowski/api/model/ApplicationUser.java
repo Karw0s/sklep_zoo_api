@@ -2,8 +2,6 @@ package pl.michalkarwowski.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,12 +17,10 @@ public class ApplicationUser {
     private String username;
     private String password;
 
-    private String firstName;
-    private String lastName;
     @OneToMany
     private List<Product> products;
     @OneToMany
-    private List<Counterparty> counterparties;
+    private List<Client> clients;
     @OneToMany
     private List<Invoice> invoices;
 
