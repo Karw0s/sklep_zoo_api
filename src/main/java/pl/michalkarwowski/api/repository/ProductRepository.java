@@ -8,4 +8,7 @@ import java.util.List;
 public interface ProductRepository extends CrudRepository <Product, Integer>  {
     List<Product> findAll();
     Product findByName(String name);
+    Product getById(Integer id);
+    void deleteById(Integer id);
+//    Product findById(Integer id);
 }

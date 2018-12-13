@@ -2,10 +2,7 @@ package pl.michalkarwowski.api.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @Entity
@@ -19,7 +16,9 @@ public class Product {
     private String manufacturer;
     private String unitOfMeasure;
     private Double amount;
+    @Column(precision=10, scale=2)
     private Double priceNetto;
+    @Column(precision=10, scale=2)
     private Double priceBrutto;
     private Integer vat;
     private String pkiwCode;

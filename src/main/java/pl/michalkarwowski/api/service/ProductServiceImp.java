@@ -30,4 +30,19 @@ public class ProductServiceImp implements ProductService {
     public Product getProduct(String name) {
         return productRepository.findByName(name);
     }
+
+    @Override
+    public Product updateProduct(Integer id, Product product) {
+        return productRepository.save(product);
+    }
+
+    @Override
+    public Product getProduct(Integer id) {
+        return productRepository.getById(id);
+    }
+
+    @Override
+    public void deleteProduct(Integer id) {
+         productRepository.deleteById(id);
+    }
 }
