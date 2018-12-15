@@ -21,7 +21,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public Product addNewProduct(Product product, String username) {
+    public Product createProduct(Product product, String username) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         applicationUser.getProducts().add(product);
         productRepository.save(product);
