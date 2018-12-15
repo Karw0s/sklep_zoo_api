@@ -31,7 +31,7 @@ public class Invoice {
     @ManyToOne
     private Client buyer;
     @OneToMany(mappedBy = "invoice")
-    private List<InvoicePosition> positions = new ArrayList<>();
+    private List<InvoicePosition> positions;
     private Double priceNet;        // netto
     private Double priceGross;      // brutto
 

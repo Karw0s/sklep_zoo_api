@@ -6,10 +6,7 @@ import pl.michalkarwowski.api.model.ApplicationUser;
 import pl.michalkarwowski.api.model.Invoice;
 import pl.michalkarwowski.api.model.InvoicePosition;
 import pl.michalkarwowski.api.model.Product;
-import pl.michalkarwowski.api.repository.ApplicationUserRepository;
 import pl.michalkarwowski.api.repository.InvoiceRepository;
-import pl.michalkarwowski.api.repository.InvoicePositionRepository;
-import pl.michalkarwowski.api.repository.UserRepository;
 
 import java.util.List;
 
@@ -18,19 +15,25 @@ public class InvoiceServiceImp implements InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private final ApplicationUserService applicationUserService;
+    private final InvoicePositionService invoicePositionService;
 
     @Autowired
     public InvoiceServiceImp(InvoiceRepository invoiceRepository,
-                             ApplicationUserService applicationUserService) {
+                             ApplicationUserService applicationUserService,
+                             InvoicePositionService invoicePositionService) {
         this.invoiceRepository = invoiceRepository;
         this.applicationUserService = applicationUserService;
+        this.invoicePositionService = invoicePositionService;
     }
 
     @Override
     public Invoice createInvoice(Invoice invoice) {
         ApplicationUser user = applicationUserService.getCurrentUser();
-        user.getInvoices().add(invoice);
+
+        List<InvoicePosition> invPos = invoicePositionService.createInvoicePos(invoice.getPositions());
+        invoice.setPositions(invPos);
         Invoice invoice1 = invoiceRepository.save(invoice);
+        user.getInvoices().add(invoice);
         applicationUserService.saveAppUser(user);
         return invoice1;
     }
