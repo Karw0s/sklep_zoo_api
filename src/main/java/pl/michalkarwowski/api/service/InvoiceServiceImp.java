@@ -27,6 +27,55 @@ public class InvoiceServiceImp implements InvoiceService {
     }
 
     @Override
+    public Invoice createInvoice(Invoice invoice) {
+        ApplicationUser user = applicationUserService.getCurrentUser();
+        user.getInvoices().add(invoice);
+        Invoice invoice1 = invoiceRepository.save(invoice);
+        applicationUserService.saveAppUser(user);
+        return invoice1;
+    }
+
+    @Override
+    public Invoice getInvoice(String invoiceNumber) {
+        return invoiceRepository.getById(invoiceNumber);
+    }
+
+    @Override
+    public List<Invoice> getUserInvoices() {
+        return applicationUserService.getCurrentUser().getInvoices();
+    }
+
+    @Override
+    public Invoice updateInvoice(Invoice newInvoice) {
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        int invoiceIndex = applicationUser.getInvoices().indexOf(invoiceRepository.getById(newInvoice.getId()));
+        Invoice invoice = null;
+        if (invoiceIndex != -1){
+            if (!applicationUser.getInvoices().get(invoiceIndex).equals(newInvoice)){
+                applicationUser.getInvoices().remove(invoiceIndex);
+                invoice = invoiceRepository.save(newInvoice);
+                applicationUser.getInvoices().add(invoice);
+                applicationUserService.saveAppUser(applicationUser);
+            }
+        }
+        return invoice;
+    }
+
+    @Override
+    public boolean deleteInvoice(String id) {
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        Invoice invoice = invoiceRepository.getById(id);
+        if (applicationUser.getInvoices().contains(invoice)){
+            if (applicationUser.getInvoices().remove(invoice)){
+                applicationUserService.saveAppUser(applicationUser);
+                invoiceRepository.deleteById(id);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public Invoice addNewPosition(Product product, String invoiceID, Integer amount) {
 //        Invoice invoice = invoiceRepository.findByNr(invoiceID);
 //        InvoicePosition invoicePosition = new InvoicePosition();
@@ -36,29 +85,5 @@ public class InvoiceServiceImp implements InvoiceService {
 //        invoicePosition = invoicePositionRepository.save(invoicePosition);
 //        invoice.getInvoicePosition().add(invoicePosition);
         return null;
-    }
-
-    @Override
-    public Invoice getInvoice(String invoiceNumber) {
-        return invoiceRepository.getById(invoiceNumber);
-    }
-
-    @Override
-    public Invoice createInvoice(Invoice invoice, String username) {
-        ApplicationUser user = applicationUserService.getCurrentUser();
-        user.getInvoices().add(invoice);
-        Invoice invoice1 = invoiceRepository.save(invoice);
-        applicationUserService.saveAppUser(user);
-        return invoice1;
-    }
-
-    @Override
-    public Invoice updateInvoice(Invoice invoice, String username) {
-        return null;
-    }
-
-    @Override
-    public List<Invoice> getUserInvoices(String username) {
-        return applicationUserService.getCurrentUser().getInvoices();
     }
 }

@@ -6,9 +6,10 @@ import pl.michalkarwowski.api.model.Product;
 import java.util.List;
 
 public interface InvoiceService {
-    Invoice addNewPosition(Product product, String invoiceID, Integer amount);
+    Invoice createInvoice(Invoice invoice);
     Invoice getInvoice(String invoiceNumber);
-    Invoice createInvoice(Invoice invoice, String username);
-    Invoice updateInvoice(Invoice invoice, String username);
-    List<Invoice> getUserInvoices(String username);
+    List<Invoice> getUserInvoices();
+    Invoice updateInvoice(Invoice invoice);
+    boolean deleteInvoice(String id);
+    Invoice addNewPosition(Product product, String invoiceID, Integer amount);
 }
