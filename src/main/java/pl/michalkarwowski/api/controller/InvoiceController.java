@@ -34,13 +34,13 @@ public class InvoiceController {
     }
 
     @GetMapping("/invoices/{id}")
-    public ResponseEntity<Invoice> getInvoice(@PathVariable Integer id) {
+    public ResponseEntity<Invoice> getInvoice(@PathVariable Long id) {
         Invoice invoice = invoiceService.getInvoice(id);
         return new ResponseEntity<>(invoice, HttpStatus.OK);
     }
 
     @PutMapping("/invoices/{id}")
-    public ResponseEntity<Invoice> updateInvoice(@PathVariable Integer id,
+    public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id,
                                                  @RequestBody Invoice invoice) {
         Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
         if (updatedInvoice == null){
@@ -50,7 +50,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/invoices/{id}")
-    public ResponseEntity<Void> deleteInvoice(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteInvoice(@PathVariable Long id) {
         if (invoiceService.deleteInvoice(id)){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {

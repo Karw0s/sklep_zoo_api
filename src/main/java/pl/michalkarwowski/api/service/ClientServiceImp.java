@@ -36,6 +36,7 @@ public class ClientServiceImp implements ClientService {
         addressService.createAddress(client.getAddress());
         Client newClient = clientRepository.save(client);
         applicationUser.getClients().add(newClient);
+        applicationUserService.saveAppUser(applicationUser);
         return newClient;
     }
 

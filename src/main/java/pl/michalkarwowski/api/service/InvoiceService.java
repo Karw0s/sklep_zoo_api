@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface InvoiceService {
     Invoice createInvoice(Invoice invoice);
-    Invoice getInvoice(Integer invoiceNumber);
+    Invoice getInvoice(Long invoiceNumber);
     List<Invoice> getUserInvoices();
     Invoice updateInvoice(Invoice invoice);
-    boolean deleteInvoice(Integer id);
+    boolean deleteInvoice(Long id);
     Invoice addNewPosition(Product product, String invoiceID, Integer amount);
 }

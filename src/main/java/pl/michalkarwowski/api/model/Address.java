@@ -12,7 +12,7 @@ public class Address {
 
     @Id
     @GeneratedValue
-    long id;
+    Long id;
     private String street;
     private String zipCode;
     private String city;
