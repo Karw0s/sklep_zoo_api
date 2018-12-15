@@ -1,5 +1,6 @@
 package pl.michalkarwowski.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,9 +12,10 @@ public class InvoicePosition {
 
     @Id
     @GeneratedValue
-    private Integer lp;
+    private Integer id;
     @ManyToOne
     @JoinColumn(name = "fk_invoice")
+    @JsonIgnore
     private Invoice invoice;
     @ManyToOne
     @JoinColumn(name = "fk_product")

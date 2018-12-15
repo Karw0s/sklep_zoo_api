@@ -5,5 +5,6 @@ import pl.michalkarwowski.api.model.Invoice;
 
 public interface InvoiceRepository extends CrudRepository<Invoice, String> {
     Invoice getById(String nr);
+    Invoice getByNumber (String number);
 
 }

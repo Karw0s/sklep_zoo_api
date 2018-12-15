@@ -8,7 +8,10 @@ import pl.michalkarwowski.api.model.Invoice;
 import pl.michalkarwowski.api.model.Product;
 import pl.michalkarwowski.api.service.InvoiceService;
 
-@RestController("/invoice")
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+@RestController("/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
@@ -30,14 +33,32 @@ public class InvoiceController {
         return null;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
-        return null;
+    @PostMapping()
+    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice, HttpServletRequest request) {
+        String username = request.getUserPrincipal().getName();
+        Invoice newInvoice = invoiceService.createInvoice(invoice, username);
+        return new ResponseEntity<>(newInvoice, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Invoice> getInvoice(@PathVariable String id) {
         Invoice invoice = invoiceService.getInvoice(id);
         return new ResponseEntity<>(invoice, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/update")
+    public ResponseEntity<Invoice> updateInvoice(@PathVariable String id,
+                                                 @RequestBody Invoice invoice,
+                                                 HttpServletRequest request) {
+        String username = request.getUserPrincipal().getName();
+        Invoice updatedInvoice = invoiceService.updateInvoice(invoice, username);
+        return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Invoice>> getUserInvoices(HttpServletRequest request) {
+        String username = request.getUserPrincipal().getName();
+        List<Invoice> invoiceList = invoiceService.getUserInvoices(username);
+        return new ResponseEntity<>(invoiceList, HttpStatus.OK);
     }
 }
