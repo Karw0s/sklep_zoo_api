@@ -11,7 +11,7 @@ import pl.michalkarwowski.api.service.InvoiceService;
 
 import java.util.List;
 
-@RestController("/invoices")
+@RestController
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
@@ -21,26 +21,26 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    @GetMapping
+    @GetMapping("/invoices")
     public ResponseEntity<List<Invoice>> getUserInvoices() {
         List<Invoice> invoiceList = invoiceService.getUserInvoices();
         return new ResponseEntity<>(invoiceList, HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/invoices")
     public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
         Invoice newInvoice = invoiceService.createInvoice(invoice);
         return new ResponseEntity<>(newInvoice, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Invoice> getInvoice(@PathVariable String id) {
+    @GetMapping("/invoices/{id}")
+    public ResponseEntity<Invoice> getInvoice(@PathVariable Integer id) {
         Invoice invoice = invoiceService.getInvoice(id);
         return new ResponseEntity<>(invoice, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<Invoice> updateInvoice(@PathVariable String id,
+    @PutMapping("/invoices/{id}")
+    public ResponseEntity<Invoice> updateInvoice(@PathVariable Integer id,
                                                  @RequestBody Invoice invoice) {
         Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
         if (updatedInvoice == null){
@@ -49,8 +49,8 @@ public class InvoiceController {
         return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteInvoice(@PathVariable String id) {
+    @DeleteMapping("/invoices/{id}")
+    public ResponseEntity<Void> deleteInvoice(@PathVariable Integer id) {
         if (invoiceService.deleteInvoice(id)){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
@@ -58,14 +58,14 @@ public class InvoiceController {
         }
     }
 
-    @PostMapping("/addProduct")
+    @PostMapping("/invoices/addProduct")
     public ResponseEntity<Invoice> addInvoicePosition(@RequestBody String invoiceID,
                                                       @RequestBody Product product,
                                                       @RequestBody Integer amount) {
         return new ResponseEntity<>(invoiceService.addNewPosition(product, invoiceID, amount), HttpStatus.OK);
     }
 
-    @GetMapping("/getNextInvoiceId")
+    @GetMapping("/invoices/getNextInvoiceId")
     public ResponseEntity<String> getNextInvoiceId() {
         return null;
     }

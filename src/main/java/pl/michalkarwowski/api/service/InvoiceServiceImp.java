@@ -36,7 +36,7 @@ public class InvoiceServiceImp implements InvoiceService {
     }
 
     @Override
-    public Invoice getInvoice(String invoiceNumber) {
+    public Invoice getInvoice(Integer invoiceNumber) {
         return invoiceRepository.getById(invoiceNumber);
     }
 
@@ -62,7 +62,7 @@ public class InvoiceServiceImp implements InvoiceService {
     }
 
     @Override
-    public boolean deleteInvoice(String id) {
+    public boolean deleteInvoice(Integer id) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         Invoice invoice = invoiceRepository.getById(id);
         if (applicationUser.getInvoices().contains(invoice)){
