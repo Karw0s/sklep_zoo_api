@@ -1,5 +1,6 @@
 package pl.michalkarwowski.api.service;
 
+import pl.michalkarwowski.api.dto.InvoiceListDTO;
 import pl.michalkarwowski.api.model.Invoice;
 import pl.michalkarwowski.api.model.Product;
 
@@ -12,4 +13,5 @@ public interface InvoiceService {
     Invoice updateInvoice(Invoice invoice);
     boolean deleteInvoice(Long id);
     Invoice addNewPosition(Product product, String invoiceID, Integer amount);
+    List<InvoiceListDTO> getInvoiceList();
 }

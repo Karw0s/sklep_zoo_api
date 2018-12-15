@@ -5,6 +5,7 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.michalkarwowski.api.dto.InvoiceListDTO;
 import pl.michalkarwowski.api.model.Invoice;
 import pl.michalkarwowski.api.model.Product;
 import pl.michalkarwowski.api.service.InvoiceService;
@@ -43,7 +44,7 @@ public class InvoiceController {
     public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id,
                                                  @RequestBody Invoice invoice) {
         Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
-        if (updatedInvoice == null){
+        if (updatedInvoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
@@ -51,11 +52,17 @@ public class InvoiceController {
 
     @DeleteMapping("/invoices/{id}")
     public ResponseEntity<Void> deleteInvoice(@PathVariable Long id) {
-        if (invoiceService.deleteInvoice(id)){
+        if (invoiceService.deleteInvoice(id)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @GetMapping("/invoices/list")
+    public ResponseEntity<List<InvoiceListDTO>> getInvoicesList() {
+        List<InvoiceListDTO> invoiceListDTO = invoiceService.getInvoiceList();
+        return new ResponseEntity<>(invoiceListDTO, HttpStatus.OK);
     }
 
     @PostMapping("/invoices/addProduct")

@@ -2,12 +2,14 @@ package pl.michalkarwowski.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.api.dto.InvoiceListDTO;
 import pl.michalkarwowski.api.model.ApplicationUser;
 import pl.michalkarwowski.api.model.Invoice;
 import pl.michalkarwowski.api.model.InvoicePosition;
 import pl.michalkarwowski.api.model.Product;
 import pl.michalkarwowski.api.repository.InvoiceRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -88,5 +90,23 @@ public class InvoiceServiceImp implements InvoiceService {
 //        invoicePosition = invoicePositionRepository.save(invoicePosition);
 //        invoice.getInvoicePosition().add(invoicePosition);
         return null;
+    }
+
+    @Override
+    public List<InvoiceListDTO> getInvoiceList() {
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        List<Invoice> invoiceList = applicationUser.getInvoices();
+        List<InvoiceListDTO> invoiceListDTO = new ArrayList<>();
+        for (Invoice invoice : invoiceList) {
+            invoiceListDTO.add(InvoiceListDTO.builder()
+                    .number(invoice.getNumber())
+                    .issueDate(invoice.getIssueDate())
+                    .paymentType(invoice.getPaymentType())
+                    .buyerCompanyName(invoice.getBuyer().getCompanyName())
+                    .priceNet(invoice.getPriceNet())
+                    .priceGross(invoice.getPriceGross())
+                    .build());
+        }
+        return invoiceListDTO;
     }
 }
