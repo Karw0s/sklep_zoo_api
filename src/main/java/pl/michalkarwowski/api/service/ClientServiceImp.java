@@ -1,6 +1,5 @@
 package pl.michalkarwowski.api.service;
 
-import javassist.tools.rmi.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.michalkarwowski.api.model.ApplicationUser;
@@ -15,12 +14,15 @@ public class ClientServiceImp implements ClientService {
 
     private final ClientRepository clientRepository;
     private final ApplicationUserService applicationUserService;
+    private final AddressService addressService;
 
     @Autowired
     public ClientServiceImp(ClientRepository clientRepository,
-                            ApplicationUserService applicationUserService) {
+                            ApplicationUserService applicationUserService,
+                            AddressService addressService) {
         this.clientRepository = clientRepository;
         this.applicationUserService = applicationUserService;
+        this.addressService = addressService;
     }
 
     @Override
@@ -30,7 +32,11 @@ public class ClientServiceImp implements ClientService {
 
     @Override
     public Client createClient(Client client) {
-        return null;
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        addressService.createAddress(client.getAddress());
+        Client newClient = clientRepository.save(client);
+        applicationUser.getClients().add(newClient);
+        return newClient;
     }
 
     @Override

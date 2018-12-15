@@ -1,18 +1,20 @@
 package pl.michalkarwowski.api.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.*;
 
 @Data
 @Entity
-public class Client extends Person {
+public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String companyName;
-    private Integer nipNumber;
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    private Long nipNumber;
     @OneToOne
     private Address address;
     private String firstName;
