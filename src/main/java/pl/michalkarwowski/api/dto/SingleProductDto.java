@@ -1,7 +1,7 @@
 package pl.michalkarwowski.api.dto;
 
 import lombok.Builder;
-import pl.michalkarwowski.api.model.Product;
+import pl.michalkarwowski.api.models.Product;
 
 import java.util.List;
 
