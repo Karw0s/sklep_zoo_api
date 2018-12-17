@@ -99,6 +99,7 @@ public class InvoiceServiceImp implements InvoiceService {
         List<InvoiceListDTO> invoiceListDTO = new ArrayList<>();
         for (Invoice invoice : invoiceList) {
             invoiceListDTO.add(InvoiceListDTO.builder()
+                    .id(invoice.getId())
                     .number(invoice.getNumber())
                     .issueDate(invoice.getIssueDate())
                     .paymentType(invoice.getPaymentType())

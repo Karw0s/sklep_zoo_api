@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.repositories.AddressRepository;
 
+import java.util.Optional;
+
 @Service
 public class AddressServiceImp implements AddressService {
 
@@ -18,5 +20,16 @@ public class AddressServiceImp implements AddressService {
     @Override
     public Address createAddress(Address address) {
         return addressRepository.save(address);
+    }
+
+    @Override
+    public Address updateAddress(Address address) {
+        Optional<Address> addressDB = this.addressRepository.findById(address.getId());
+        if (addressDB.isPresent()){
+            if(!addressDB.get().equals(address)) {
+                return this.addressRepository.save(address);
+            }
+        }
+        return null;
     }
 }

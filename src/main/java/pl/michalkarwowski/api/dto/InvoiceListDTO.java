@@ -11,6 +11,7 @@ import java.util.Date;
 @Builder
 public class InvoiceListDTO {
 
+    private Long id;
     private String number;
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd.MM.yyyy")

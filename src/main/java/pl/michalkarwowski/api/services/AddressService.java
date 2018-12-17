@@ -4,4 +4,5 @@ import pl.michalkarwowski.api.models.Address;
 
 public interface AddressService {
     Address createAddress(Address address);
+    Address updateAddress(Address address);
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.michalkarwowski.api.dto.ClientsDetailDTO;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.services.ClientService;
 
@@ -21,7 +22,7 @@ public class ClientController {
     }
 
     @GetMapping("/clients")
-    public ResponseEntity<List<Client>> getUserClients() {
+    public ResponseEntity<List<ClientsDetailDTO>> getUserClients() {
         return new ResponseEntity<>(clientService.getUserClients(), HttpStatus.OK);
     }
 
@@ -47,7 +48,7 @@ public class ClientController {
         return new ResponseEntity<>(updatedClient, HttpStatus.OK);
     }
 
-    @DeleteMapping("/client/{id}")
+    @DeleteMapping("/clients/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable Integer id) {
         if(clientService.deleteClient(id)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

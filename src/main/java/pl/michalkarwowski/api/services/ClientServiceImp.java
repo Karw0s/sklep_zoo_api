@@ -2,10 +2,13 @@ package pl.michalkarwowski.api.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.api.dto.ClientsDetailDTO;
+import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.repositories.ClientRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,8 +29,21 @@ public class ClientServiceImp implements ClientService {
     }
 
     @Override
-    public List<Client> getUserClients() {
-        return applicationUserService.getCurrentUser().getClients();
+    public List<ClientsDetailDTO> getUserClients() {
+        List<Client> clients = applicationUserService.getCurrentUser().getClients();
+        List<ClientsDetailDTO> clientsDetailList = new ArrayList<>();
+
+        for(Client client: clients) {
+            Address address = client.getAddress();
+            String addressString = String.join(" ", address.getStreet(), address.getZipCode(), address.getCity());
+            clientsDetailList.add(ClientsDetailDTO.builder()
+                    .id(client.getId())
+                    .companyName(client.getCompanyName())
+                    .nipNumber(client.getNipNumber())
+                    .address(addressString)
+                    .build());
+        }
+        return clientsDetailList;
     }
 
     @Override
@@ -54,9 +70,17 @@ public class ClientServiceImp implements ClientService {
     @Override
     public Client updateClient(Integer id, Client client) {
         Client clientDB = getClient(id);
+        boolean addressChanged = false;
         if (clientDB != null) {
+            if (!clientDB.getAddress().equals(client.getAddress())) {
+                this.addressService.updateAddress(client.getAddress());
+                addressChanged = true;
+            }
             if (!clientDB.equals(client)) {
                 return clientRepository.save(client);
+            }
+            if (addressChanged) {
+                return clientDB;
             }
         }
         return null;
