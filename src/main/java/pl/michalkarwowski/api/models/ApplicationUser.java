@@ -24,7 +24,7 @@ public class ApplicationUser {
     @OneToMany
     private List<Invoice> invoices;
     @OneToOne
-    private Client userDetails;
+    private AppUserDetails userDetails;
 
 
 }
