@@ -6,6 +6,8 @@ import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.repositories.ProductRepository;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -40,7 +42,9 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     public List<Product> getUserProducts() {
-        return applicationUserService.getCurrentUser().getProducts();
+        List<Product> products = applicationUserService.getCurrentUser().getProducts();
+        products.sort(Comparator.comparing(Product::getName));
+        return products;
     }
 
     @Override
