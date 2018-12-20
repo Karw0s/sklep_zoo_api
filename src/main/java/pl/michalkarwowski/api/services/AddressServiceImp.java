@@ -24,10 +24,12 @@ public class AddressServiceImp implements AddressService {
 
     @Override
     public Address updateAddress(Address address) {
-        Optional<Address> addressDB = this.addressRepository.findById(address.getId());
-        if (addressDB.isPresent()){
-            if(!addressDB.get().equals(address)) {
-                return this.addressRepository.save(address);
+        if (address.getId() != null){
+            Optional<Address> addressDB = this.addressRepository.findById(address.getId());
+            if (addressDB.isPresent()){
+                if(!addressDB.get().equals(address)) {
+                    return this.addressRepository.save(address);
+                }
             }
         }
         return null;

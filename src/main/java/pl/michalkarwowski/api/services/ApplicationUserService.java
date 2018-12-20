@@ -11,5 +11,6 @@ public interface ApplicationUserService {
     ApplicationUser saveAppUser(ApplicationUser applicationUser);
     ApplicationUser findByUsername(String username);
     ApplicationUser registerAppUser(AppUserRegistrationDTO userRegistrationDTO);
+    AppUserDetails getUserDetails();
     AppUserDetails updateUserDetails(AppUserDetails appUserDetails);
 }

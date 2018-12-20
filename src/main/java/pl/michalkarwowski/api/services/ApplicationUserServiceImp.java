@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
+import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.AppUserDetails;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.repositories.AppUserDetailsRepository;
@@ -50,9 +51,21 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
     }
 
     @Override
+    public AppUserDetails getUserDetails() {
+        return getCurrentUser().getUserDetails();
+    }
+
+    @Override
     public AppUserDetails updateUserDetails(AppUserDetails appUserDetails) {
         ApplicationUser applicationUser = getCurrentUser();
-        applicationUser.setUserDetails(appUserDetails);
-        return applicationUserRepository.save(applicationUser).getUserDetails();
+        Address addressDB = addressService.updateAddress(appUserDetails.getAddress());
+        if (addressDB == null){
+            addressDB = addressService.createAddress(appUserDetails.getAddress());
+        }
+        AppUserDetails appUserDetailsDB = appUserDetailsRepository.save(appUserDetails);
+        appUserDetailsDB.setAddress(addressDB);
+        applicationUser.setUserDetails(appUserDetailsDB);
+        applicationUserRepository.save(applicationUser);
+        return appUserDetailsDB;
     }
 }
