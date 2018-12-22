@@ -1,7 +1,9 @@
 package pl.michalkarwowski.api.services;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.api.dto.products.ProductDTO;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.repositories.ProductRepository;
@@ -14,16 +16,38 @@ import java.util.List;
 public class ProductServiceImp implements ProductService {
     private final ProductRepository productRepository;
     private final ApplicationUserService applicationUserService;
+    private ModelMapper modelMapper;
 
     @Autowired
     public ProductServiceImp(ProductRepository productRepository,
-                             ApplicationUserService applicationUserService) {
+                             ApplicationUserService applicationUserService,
+                             ModelMapper modelMapper) {
         this.productRepository = productRepository;
         this.applicationUserService = applicationUserService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
-    public Product createProduct(Product product, String username) {
+    public List<Product> getUserProducts() {
+        List<Product> products = applicationUserService.getCurrentUser().getProducts();
+        products.sort(Comparator.comparing(Product::getName));
+        return products;
+    }
+
+    @Override
+    public Product getProduct(Integer id) {
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        Product product = productRepository.getById(id);
+        if (applicationUser.getProducts().contains(product)) {
+            return product;
+        } else {
+            return null;
+        }
+//        return productRepository.getById(id);
+    }
+
+    @Override
+    public Product createProduct(Product product) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         applicationUser.getProducts().add(product);
         productRepository.save(product);
@@ -41,21 +65,11 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public List<Product> getUserProducts() {
-        List<Product> products = applicationUserService.getCurrentUser().getProducts();
-        products.sort(Comparator.comparing(Product::getName));
-        return products;
-    }
-
-    @Override
-    public Product getProduct(String name) {
-        return productRepository.findByName(name);
-    }
-
-    @Override
-    public Product updateProduct(Product newProduct) {
+    public Product updateProduct(Integer id, ProductDTO productDTO) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
-        int productIndex = applicationUser.getProducts().indexOf(productRepository.getById(newProduct.getId()));
+        Product newProduct = modelMapper.map(productDTO, Product.class);
+        newProduct.setId(id);
+        int productIndex = applicationUser.getProducts().indexOf(productRepository.getById(id));
         Product product = null;
         if (productIndex != -1)
             if (!applicationUser.getProducts().get(productIndex).equals(newProduct)) {
@@ -67,18 +81,6 @@ public class ProductServiceImp implements ProductService {
             }
 
         return product;
-    }
-
-    @Override
-    public Product getProduct(Integer id) {
-        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
-        Product product = productRepository.getById(id);
-        if (applicationUser.getProducts().contains(product)) {
-            return product;
-        } else {
-            return null;
-        }
-//        return productRepository.getById(id);
     }
 
     @Override

@@ -1,48 +1,63 @@
 package pl.michalkarwowski.api.controllers;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.michalkarwowski.api.dto.products.ProductCreateResponseDTO;
+import pl.michalkarwowski.api.dto.products.ProductDTO;
+import pl.michalkarwowski.api.dto.products.ProductDetailsDTO;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.ProductService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class ProductController {
 
     private final ProductService productService;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService,
+                             ModelMapper modelMapper) {
         this.productService = productService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getUserProducts() {
-        return new ResponseEntity<>(productService.getUserProducts(), HttpStatus.OK);
+    public ResponseEntity<List<ProductDetailsDTO>> getUserProducts() {
+        List<ProductDetailsDTO> response = new ArrayList<>();
+        List<Product> productList = productService.getUserProducts();
+        for (Product product : productList) {
+            response.add(modelMapper.map(product, ProductDetailsDTO.class));
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/products")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product, HttpServletRequest request) {
-        product = productService.createProduct(product, request.getUserPrincipal().getName());
-        return new ResponseEntity<>(product, HttpStatus.OK);
+    public ResponseEntity<ProductCreateResponseDTO> addProduct(@RequestBody ProductDTO product) {
+        Product response = productService.createProduct(modelMapper.map(product, Product.class));
+        return new ResponseEntity<>(modelMapper.map(response, ProductCreateResponseDTO.class), HttpStatus.OK);
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable String id) {
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable String id) {
         Product product2 = productService.getProduct(Integer.parseInt(id));
         if (product2 == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return new ResponseEntity<>(product2, HttpStatus.OK);
+        return new ResponseEntity<>(modelMapper.map(product2, ProductDTO.class), HttpStatus.OK);
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody Product product) {
-        Product product2 = productService.updateProduct(product);
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Integer id, @RequestBody ProductDTO product) {
+        Product product2 = productService.updateProduct(id, product);
         if (product2 == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -50,7 +65,7 @@ public class ProductController {
 //                .result(product2)
 //                .error(null)
 //                .build();
-        return new ResponseEntity<>(product2, HttpStatus.OK);
+        return new ResponseEntity<>(modelMapper.map(product2, ProductDTO.class), HttpStatus.OK);
     }
 
     @DeleteMapping("/products/{id}")
@@ -61,8 +76,10 @@ public class ProductController {
 
 
     @PostMapping("/products/addlist")
-    public ResponseEntity<List<Product>> addProductList(@RequestBody List<Product> productList) {
-        productList = productService.addProductList(productList);
-        return new ResponseEntity<>(productList, HttpStatus.OK);
+    public ResponseEntity<List<Product>> addProductList(@RequestBody List<ProductDTO> productList) {
+        Type listType = new TypeToken<List<Product>>() {}.getType();
+        List<Product> products = modelMapper.map(productList, listType);
+        products = productService.addProductList(products);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }
