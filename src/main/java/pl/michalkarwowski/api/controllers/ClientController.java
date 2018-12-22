@@ -6,12 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.dto.clients.ClientDTO;
-import pl.michalkarwowski.api.dto.ClientsDetailDTO;
+import pl.michalkarwowski.api.dto.clients.ClientsDetailDTO;
 import pl.michalkarwowski.api.dto.clients.ClientCreateResponseDTO;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.services.ClientService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

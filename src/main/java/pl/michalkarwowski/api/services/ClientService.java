@@ -1,7 +1,7 @@
 package pl.michalkarwowski.api.services;
 
 import pl.michalkarwowski.api.dto.clients.ClientDTO;
-import pl.michalkarwowski.api.dto.ClientsDetailDTO;
+import pl.michalkarwowski.api.dto.clients.ClientsDetailDTO;
 import pl.michalkarwowski.api.models.Client;
 
 import java.util.List;

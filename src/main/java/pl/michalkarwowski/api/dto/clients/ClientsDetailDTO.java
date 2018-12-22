@@ -1,12 +1,14 @@
-package pl.michalkarwowski.api.dto;
+package pl.michalkarwowski.api.dto.clients;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
+import lombok.Data;
 import pl.michalkarwowski.api.models.Address;
 
 import javax.persistence.OneToOne;
 
 @Builder
+@Data
 public class ClientsDetailDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)

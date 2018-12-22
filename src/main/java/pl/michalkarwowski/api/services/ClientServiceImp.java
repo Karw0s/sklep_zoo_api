@@ -5,13 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.michalkarwowski.api.dto.AddressDTO;
 import pl.michalkarwowski.api.dto.clients.ClientDTO;
-import pl.michalkarwowski.api.dto.ClientsDetailDTO;
+import pl.michalkarwowski.api.dto.clients.ClientsDetailDTO;
 import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.repositories.ClientRepository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,8 @@ public class ClientServiceImp implements ClientService {
                     .address(addressString)
                     .build());
         }
+
+        clientsDetailList.sort(Comparator.comparing(ClientsDetailDTO::getCompanyName));
         return clientsDetailList;
     }
 
