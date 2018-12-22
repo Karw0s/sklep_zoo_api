@@ -1,6 +1,7 @@
 package pl.michalkarwowski.api.models;
 
 import lombok.Data;
+import pl.michalkarwowski.api.dto.AddressDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

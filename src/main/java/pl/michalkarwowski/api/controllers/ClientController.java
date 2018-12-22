@@ -1,13 +1,17 @@
 package pl.michalkarwowski.api.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.michalkarwowski.api.dto.clients.ClientDTO;
 import pl.michalkarwowski.api.dto.ClientsDetailDTO;
+import pl.michalkarwowski.api.dto.clients.ClientCreateResponseDTO;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.services.ClientService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,37 +19,46 @@ import java.util.List;
 public class ClientController {
 
     private final ClientService clientService;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, ModelMapper modelMapper) {
         this.clientService = clientService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/clients")
     public ResponseEntity<List<ClientsDetailDTO>> getUserClients() {
-        return new ResponseEntity<>(clientService.getUserClients(), HttpStatus.OK);
+        List<ClientsDetailDTO> clientsDetailDTOList = clientService.getUserClients();
+//        List<ClientsDetailDTO> clientsDetailDTOList = new ArrayList<>();
+//        for (Client client: clients) {
+//            clientsDetailDTOList.add(modelMapper.map(client, ClientsDetailDTO.class));
+//        }
+        return new ResponseEntity<>(clientsDetailDTOList, HttpStatus.OK);
     }
 
     @PostMapping("/clients")
-    public ResponseEntity<Client> createClient(@RequestBody Client client) {
+    public ResponseEntity<ClientCreateResponseDTO> createClient(@RequestBody ClientDTO client) {
         Client newClient = clientService.createClient(client);
-        return new ResponseEntity<>(newClient, HttpStatus.OK);
+        ClientCreateResponseDTO responseDTO = modelMapper.map(newClient, ClientCreateResponseDTO.class);
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("/clients/{id}")
-    public ResponseEntity<Client> getClient(@PathVariable Integer id) {
+    public ResponseEntity<ClientDTO> getClient(@PathVariable Integer id) {
         Client client = clientService.getClient(id);
-        return new ResponseEntity<>(client, HttpStatus.OK);
+        ClientDTO clientDTO = modelMapper.map(client, ClientDTO.class);
+        return new ResponseEntity<>(clientDTO, HttpStatus.OK);
     }
 
     @PutMapping("/clients/{id}")
-    public ResponseEntity<Client> updateClient(@PathVariable Integer id,
-                                               @RequestBody Client client) {
+    public ResponseEntity<ClientDTO> updateClient(@PathVariable Integer id,
+                                               @RequestBody ClientDTO client) {
         Client updatedClient = clientService.updateClient(id, client);
         if (updatedClient == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return new ResponseEntity<>(updatedClient, HttpStatus.OK);
+        return new ResponseEntity<>(modelMapper.map(updatedClient, ClientDTO.class), HttpStatus.OK);
     }
 
     @DeleteMapping("/clients/{id}")

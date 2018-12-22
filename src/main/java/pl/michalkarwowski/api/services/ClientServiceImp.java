@@ -1,7 +1,10 @@
 package pl.michalkarwowski.api.services;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.api.dto.AddressDTO;
+import pl.michalkarwowski.api.dto.clients.ClientDTO;
 import pl.michalkarwowski.api.dto.ClientsDetailDTO;
 import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.ApplicationUser;
@@ -18,14 +21,17 @@ public class ClientServiceImp implements ClientService {
     private final ClientRepository clientRepository;
     private final ApplicationUserService applicationUserService;
     private final AddressService addressService;
+    private ModelMapper modelMapper;
 
     @Autowired
     public ClientServiceImp(ClientRepository clientRepository,
                             ApplicationUserService applicationUserService,
-                            AddressService addressService) {
+                            AddressService addressService,
+                            ModelMapper modelMapper) {
         this.clientRepository = clientRepository;
         this.applicationUserService = applicationUserService;
         this.addressService = addressService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -47,13 +53,16 @@ public class ClientServiceImp implements ClientService {
     }
 
     @Override
-    public Client createClient(Client client) {
+    public Client createClient(ClientDTO clientDTO) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
-        addressService.createAddress(client.getAddress());
-        Client newClient = clientRepository.save(client);
-        applicationUser.getClients().add(newClient);
+        Address address = addressService.createAddress(clientDTO.getAddress());
+        Client client = modelMapper.map(clientDTO, Client.class);
+
+        client.setAddress(address);
+        client = clientRepository.save(client);
+        applicationUser.getClients().add(client);
         applicationUserService.saveAppUser(applicationUser);
-        return newClient;
+        return client;
     }
 
     @Override
@@ -68,16 +77,29 @@ public class ClientServiceImp implements ClientService {
     }
 
     @Override
-    public Client updateClient(Integer id, Client client) {
+    public Client updateClient(Integer id, ClientDTO client) {
         Client clientDB = getClient(id);
         boolean addressChanged = false;
+
         if (clientDB != null) {
-            if (!clientDB.getAddress().equals(client.getAddress())) {
-                this.addressService.updateAddress(client.getAddress());
+            Client client1 = modelMapper.map(client, Client.class);
+            Address address = modelMapper.map(client.getAddress(), Address.class);
+            Long clientAddressID = clientDB.getAddress().getId();
+            Address addressDB = addressService.getAddress(clientAddressID);
+
+            if (!modelMapper.map(addressDB, AddressDTO.class).equals(client.getAddress())) {
+                address.setId(clientAddressID);
+                client1.setAddress(addressService.updateAddress(address));
                 addressChanged = true;
             }
-            if (!clientDB.equals(client)) {
-                return clientRepository.save(client);
+            if (!modelMapper.map(clientDB, ClientDTO.class).equals(client)) {
+
+                client1.setId(clientDB.getId());
+                if (!addressChanged) {
+                    client1.setAddress(addressDB);
+                }
+
+                return clientRepository.save(client1);
             }
             if (addressChanged) {
                 return clientDB;

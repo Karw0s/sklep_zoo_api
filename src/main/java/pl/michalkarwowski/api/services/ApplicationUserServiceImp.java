@@ -60,7 +60,7 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
         ApplicationUser applicationUser = getCurrentUser();
         Address addressDB = addressService.updateAddress(appUserDetails.getAddress());
         if (addressDB == null){
-            addressDB = addressService.createAddress(appUserDetails.getAddress());
+//            addressDB = addressService.createAddress(appUserDetails.getAddress());
         }
         AppUserDetails appUserDetailsDB = appUserDetailsRepository.save(appUserDetails);
         appUserDetailsDB.setAddress(addressDB);

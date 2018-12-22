@@ -30,7 +30,7 @@ public class InvoiceController {
     @PostMapping("/invoices")
     public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
         Invoice newInvoice = invoiceService.createInvoice(invoice);
-        return new ResponseEntity<>(newInvoice, HttpStatus.OK);
+        return new ResponseEntity<>(newInvoice, HttpStatus.CREATED);
     }
 
     @GetMapping("/invoices/{id}")
