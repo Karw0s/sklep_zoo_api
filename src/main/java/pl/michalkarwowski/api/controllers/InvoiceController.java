@@ -10,6 +10,7 @@ import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.InvoiceService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -35,7 +36,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices")
-    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
+    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody Invoice invoice) {
         Invoice newInvoice = invoiceService.createInvoice(invoice);
         return new ResponseEntity<>(newInvoice, HttpStatus.CREATED);
     }
@@ -48,7 +49,7 @@ public class InvoiceController {
 
     @PutMapping("/invoices/{id}")
     public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id,
-                                                 @RequestBody Invoice invoice) {
+                                                 @Valid @RequestBody Invoice invoice) {
         Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
         if (updatedInvoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

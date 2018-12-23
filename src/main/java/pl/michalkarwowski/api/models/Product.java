@@ -22,4 +22,5 @@ public class Product {
     private Double priceBrutto;
     private Integer tax;
     private String pkiwCode;
+    private String barCode;
 }

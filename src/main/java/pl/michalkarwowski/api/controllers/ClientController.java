@@ -11,6 +11,7 @@ import pl.michalkarwowski.api.dto.clients.ClientCreateResponseDTO;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.services.ClientService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -37,7 +38,7 @@ public class ClientController {
     }
 
     @PostMapping("/clients")
-    public ResponseEntity<ClientCreateResponseDTO> createClient(@RequestBody ClientDTO client) {
+    public ResponseEntity<ClientCreateResponseDTO> createClient(@Valid @RequestBody ClientDTO client) {
         Client newClient = clientService.createClient(client);
         ClientCreateResponseDTO responseDTO = modelMapper.map(newClient, ClientCreateResponseDTO.class);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
@@ -52,7 +53,7 @@ public class ClientController {
 
     @PutMapping("/clients/{id}")
     public ResponseEntity<ClientDTO> updateClient(@PathVariable Integer id,
-                                               @RequestBody ClientDTO client) {
+                                                  @Valid @RequestBody ClientDTO client) {
         Client updatedClient = clientService.updateClient(id, client);
         if (updatedClient == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

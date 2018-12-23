@@ -13,6 +13,7 @@ import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.ProductService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +42,14 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<ProductCreateResponseDTO> addProduct(@RequestBody ProductDTO product) {
+    public ResponseEntity<ProductCreateResponseDTO> addProduct(@Valid @RequestBody ProductDTO product) {
         Product response = productService.createProduct(modelMapper.map(product, Product.class));
         return new ResponseEntity<>(modelMapper.map(response, ProductCreateResponseDTO.class), HttpStatus.OK);
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<ProductDTO> getProduct(@PathVariable String id) {
-        Product product2 = productService.getProduct(Integer.parseInt(id));
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable Integer id) {
+        Product product2 = productService.getProduct(id);
         if (product2 == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -56,7 +57,8 @@ public class ProductController {
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Integer id, @RequestBody ProductDTO product) {
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Integer id,
+                                                    @Valid @RequestBody ProductDTO product) {
         Product product2 = productService.updateProduct(id, product);
         if (product2 == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

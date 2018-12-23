@@ -9,6 +9,8 @@ import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.services.ApplicationUserService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -23,14 +25,14 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<String> signUp(@RequestBody AppUserRegistrationDTO user) {
-        ApplicationUser user2= applicationUserService.findByUsername(user.getUsername());
-        if(user2 == null ){
+    public ResponseEntity<String> signUp(@Valid @RequestBody AppUserRegistrationDTO user) {
+        ApplicationUser user2 = applicationUserService.findByUsername(user.getUsername());
+        if (user2 == null) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             applicationUserService.registerAppUser(user);
             return new ResponseEntity<>("user registered successfully", HttpStatus.CREATED);
-        }else {
-            return new ResponseEntity<>("User exists",HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User exists", HttpStatus.OK);
         }
     }
 }
