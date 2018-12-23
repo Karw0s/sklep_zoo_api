@@ -27,6 +27,6 @@ public class ProductDTO {
     private Double priceBrutto;
     @NotNull
     private Integer tax;
-    private String pkiwCode;
+    private String pkwiuCode;
     private String barCode;
 }
