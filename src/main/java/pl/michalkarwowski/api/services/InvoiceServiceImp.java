@@ -46,11 +46,6 @@ public class InvoiceServiceImp implements InvoiceService {
     }
 
     @Override
-    public List<Invoice> getUserInvoices() {
-        return applicationUserService.getCurrentUser().getInvoices();
-    }
-
-    @Override
     public Invoice updateInvoice(Invoice newInvoice) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         int invoiceIndex = applicationUser.getInvoices().indexOf(invoiceRepository.getById(newInvoice.getId()));
@@ -109,5 +104,12 @@ public class InvoiceServiceImp implements InvoiceService {
                     .build());
         }
         return invoiceListDTO;
+    }
+
+    @Override
+    public String nextInvoiceNumber() {
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        List<Invoice> invoiceList = applicationUser.getInvoices();
+        return null;
     }
 }

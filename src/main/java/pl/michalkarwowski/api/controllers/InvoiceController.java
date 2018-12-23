@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.dto.InvoiceListDTO;
+import pl.michalkarwowski.api.dto.invoice.InvoiceNextNumberDTO;
 import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.InvoiceService;
@@ -21,10 +22,16 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
+//    @GetMapping("/invoices")
+//    public ResponseEntity<List<Invoice>> getUserInvoices() {
+//        List<Invoice> invoiceList = invoiceService.getUserInvoices();
+//        return new ResponseEntity<>(invoiceList, HttpStatus.OK);
+//    }
+
     @GetMapping("/invoices")
-    public ResponseEntity<List<Invoice>> getUserInvoices() {
-        List<Invoice> invoiceList = invoiceService.getUserInvoices();
-        return new ResponseEntity<>(invoiceList, HttpStatus.OK);
+    public ResponseEntity<List<InvoiceListDTO>> getInvoicesList() {
+        List<InvoiceListDTO> invoiceListDTO = invoiceService.getInvoiceList();
+        return new ResponseEntity<>(invoiceListDTO, HttpStatus.OK);
     }
 
     @PostMapping("/invoices")
@@ -58,11 +65,7 @@ public class InvoiceController {
         }
     }
 
-    @GetMapping("/invoices/list")
-    public ResponseEntity<List<InvoiceListDTO>> getInvoicesList() {
-        List<InvoiceListDTO> invoiceListDTO = invoiceService.getInvoiceList();
-        return new ResponseEntity<>(invoiceListDTO, HttpStatus.OK);
-    }
+
 
     @PostMapping("/invoices/addProduct")
     public ResponseEntity<Invoice> addInvoicePosition(@RequestBody String invoiceID,
@@ -71,8 +74,8 @@ public class InvoiceController {
         return new ResponseEntity<>(invoiceService.addNewPosition(product, invoiceID, amount), HttpStatus.OK);
     }
 
-    @GetMapping("/invoices/getNextInvoiceId")
-    public ResponseEntity<String> getNextInvoiceId() {
+    @GetMapping("/invoices/next-number")
+    public ResponseEntity<InvoiceNextNumberDTO> getNextInvoiceNumber() {
         return null;
     }
 }
