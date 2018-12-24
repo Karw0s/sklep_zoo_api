@@ -21,6 +21,6 @@ public class Product {
     @Column(precision=10, scale=2)
     private Double priceBrutto;
     private Integer tax;
-    private String pkiwCode;
+    private String pkwiuCode;
     private String barCode;
 }
