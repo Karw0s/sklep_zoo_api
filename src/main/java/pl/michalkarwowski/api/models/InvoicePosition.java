@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -14,14 +15,17 @@ public class InvoicePosition {
     @GeneratedValue
     private Integer id;
     @ManyToOne
-    @JoinColumn(name = "fk_invoice")
-    @JsonIgnore
-    private Invoice invoice;
-    @ManyToOne
     @JoinColumn(name = "fk_product")
     private Product product;
-    private Integer quantity;
-    private Double nettoValue;      // amount * productNettoPrice
-    private Double bruttoValue;     // nettoValue + tax * nettoValue
-    private Double totalTaxValue;   // tax * nettoValue
+
+    private String name;
+    private String pkwiuCode;
+
+    private Double quantity;
+    private String tax;
+    private Double priceNetto;
+    private String unitOfMeasure;
+    private Double totalPriceBrutto;
+    private Double totalPriceNetto;
+    private Double totalPriceTax;
 }

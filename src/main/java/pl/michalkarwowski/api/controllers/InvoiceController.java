@@ -1,26 +1,36 @@
 package pl.michalkarwowski.api.controllers;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.dto.InvoiceListDTO;
+import pl.michalkarwowski.api.dto.invoice.InvoiceDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceNextNumberDTO;
+import pl.michalkarwowski.api.dto.invoice.InvoicePositionDTO;
 import pl.michalkarwowski.api.models.Invoice;
+import pl.michalkarwowski.api.models.InvoicePosition;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.InvoiceService;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public InvoiceController(InvoiceService invoiceService) {
+    public InvoiceController(InvoiceService invoiceService,
+                             ModelMapper modelMapper) {
         this.invoiceService = invoiceService;
+        this.modelMapper = modelMapper;
     }
 
 //    @GetMapping("/invoices")
@@ -36,25 +46,39 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices")
-    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody Invoice invoice) {
-        Invoice newInvoice = invoiceService.createInvoice(invoice);
+    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody InvoiceDTO invoiceDTO) {
+        Invoice newInvoice = invoiceService.createInvoice(invoiceDTO);
         return new ResponseEntity<>(newInvoice, HttpStatus.CREATED);
     }
 
     @GetMapping("/invoices/{id}")
-    public ResponseEntity<Invoice> getInvoice(@PathVariable Long id) {
+    public ResponseEntity<InvoiceDTO> getInvoice(@PathVariable Long id) {
         Invoice invoice = invoiceService.getInvoice(id);
-        return new ResponseEntity<>(invoice, HttpStatus.OK);
+        ModelMapper modelMapper2 = new ModelMapper();
+        TypeMap<Invoice, InvoiceDTO> typeMap = modelMapper2.createTypeMap(Invoice.class, InvoiceDTO.class);
+        typeMap.addMappings(new PropertyMap<Invoice, InvoiceDTO>() {
+            @Override
+            protected void configure() {
+                skip(destination.getPositions());
+            }
+        });
+        InvoiceDTO invoiceDTO = modelMapper2.map(invoice, InvoiceDTO.class);
+        invoiceDTO.setPositions(new ArrayList<>());
+        for (InvoicePosition position :
+                invoice.getPositions()) {
+            invoiceDTO.getPositions().add(modelMapper2.map(position, InvoicePositionDTO.class));
+        }
+        return new ResponseEntity<>(invoiceDTO, HttpStatus.OK);
     }
 
     @PutMapping("/invoices/{id}")
     public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id,
                                                  @Valid @RequestBody Invoice invoice) {
-        Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
-        if (updatedInvoice == null) {
+//        Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
+//        if (updatedInvoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
     }
 
     @DeleteMapping("/invoices/{id}")

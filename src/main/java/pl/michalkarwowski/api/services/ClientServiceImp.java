@@ -9,7 +9,9 @@ import pl.michalkarwowski.api.dto.clients.ClientsDetailDTO;
 import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.models.Client;
+import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.repositories.ClientRepository;
+import pl.michalkarwowski.api.repositories.InvoiceRepository;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,16 +22,19 @@ import java.util.Optional;
 public class ClientServiceImp implements ClientService {
 
     private final ClientRepository clientRepository;
+    private InvoiceRepository invoiceRepository;
     private final ApplicationUserService applicationUserService;
     private final AddressService addressService;
     private ModelMapper modelMapper;
 
     @Autowired
     public ClientServiceImp(ClientRepository clientRepository,
+                            InvoiceRepository invoiceRepository,
                             ApplicationUserService applicationUserService,
                             AddressService addressService,
                             ModelMapper modelMapper) {
         this.clientRepository = clientRepository;
+        this.invoiceRepository = invoiceRepository;
         this.applicationUserService = applicationUserService;
         this.addressService = addressService;
         this.modelMapper = modelMapper;
@@ -117,9 +122,11 @@ public class ClientServiceImp implements ClientService {
         Optional<Client> client = clientRepository.findById(id);
         if (client.isPresent())
             if (applicationUser.getClients().contains(client.get())) {
+                Optional<Invoice> invoiceOptional = invoiceRepository.findByBuyerId(id);
                 if (applicationUser.getClients().remove(client.get())) {
                     applicationUserService.saveAppUser(applicationUser);
-                    clientRepository.deleteById(id);
+                    if(!invoiceOptional.isPresent())
+                        clientRepository.deleteById(id);
                     return true;
                 }
             }

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,21 +18,19 @@ public class Invoice {
 
     private String number;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @JsonFormat(pattern = "dd.MM.yyyy", shape = JsonFormat.Shape.STRING)
+//    @JsonFormat(pattern = "dd.MM.yyyy", shape = JsonFormat.Shape.STRING)
     private Date issueDate;
     private String issuePlace;
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @JsonFormat(pattern = "dd.MM.yyyy", shape = JsonFormat.Shape.STRING)
+//    @JsonFormat(pattern = "dd.MM.yyyy", shape = JsonFormat.Shape.STRING)
     private Date saleDate;
     private String paymentType;
     @ManyToOne
-    private Client seller;
+    private AppUserDetails seller;
     @ManyToOne
     private Client buyer;
-    @OneToMany(mappedBy = "invoice")
-    private List<InvoicePosition> positions;
+    @OneToMany
+    private List<InvoicePosition> positions = new ArrayList<>();
     private Double priceNet;        // netto
     private Double priceGross;      // brutto
     private Double priceTax;
