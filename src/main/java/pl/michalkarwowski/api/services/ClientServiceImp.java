@@ -122,10 +122,10 @@ public class ClientServiceImp implements ClientService {
         Optional<Client> client = clientRepository.findById(id);
         if (client.isPresent())
             if (applicationUser.getClients().contains(client.get())) {
-                Optional<Invoice> invoiceOptional = invoiceRepository.findByBuyerId(id);
+                List<Invoice> invoiceOptional = invoiceRepository.findAllByBuyerId(id);
                 if (applicationUser.getClients().remove(client.get())) {
                     applicationUserService.saveAppUser(applicationUser);
-                    if(!invoiceOptional.isPresent())
+                    if(invoiceOptional.isEmpty())
                         clientRepository.deleteById(id);
                     return true;
                 }

@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.api.dto.AddressDTO;
 import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
 import pl.michalkarwowski.api.models.Address;
@@ -73,9 +74,13 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
         AppUserDetails appUserDetails = modelMapper.map(appUserDetailsDTO, AppUserDetails.class);
 
         Address address = modelMapper.map(appUserDetailsDTO.getAddress(), Address.class);
-        address.setId(applicationUser.getUserDetails().getAddress().getId());
-
-        Address addressDB = addressService.updateAddress(address);
+        Address addressDB = null;
+        if(applicationUser.getUserDetails().getAddress() == null) {
+            addressDB = addressService.createAddress(modelMapper.map(address, AddressDTO.class));
+        } else {
+            address.setId(applicationUser.getUserDetails().getAddress().getId());
+            addressDB = addressService.updateAddress(address);
+        }
 
         if (addressDB != null) {
             appUserDetails.setAddress(addressDB);

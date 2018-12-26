@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.michalkarwowski.api.dto.products.ProductDTO;
 import pl.michalkarwowski.api.models.ApplicationUser;
+import pl.michalkarwowski.api.models.InvoicePosition;
 import pl.michalkarwowski.api.models.Product;
+import pl.michalkarwowski.api.repositories.InvoicePositionRepository;
 import pl.michalkarwowski.api.repositories.ProductRepository;
 
 import java.util.Collections;
@@ -15,14 +17,17 @@ import java.util.List;
 @Service
 public class ProductServiceImp implements ProductService {
     private final ProductRepository productRepository;
+    private InvoicePositionRepository invoicePositionRepository;
     private final ApplicationUserService applicationUserService;
     private ModelMapper modelMapper;
 
     @Autowired
     public ProductServiceImp(ProductRepository productRepository,
+                             InvoicePositionRepository invoicePositionRepository,
                              ApplicationUserService applicationUserService,
                              ModelMapper modelMapper) {
         this.productRepository = productRepository;
+        this.invoicePositionRepository = invoicePositionRepository;
         this.applicationUserService = applicationUserService;
         this.modelMapper = modelMapper;
     }
@@ -90,7 +95,8 @@ public class ProductServiceImp implements ProductService {
         if (applicationUser.getProducts().contains(product)) {
             if (applicationUser.getProducts().remove(productRepository.getById(id))) {
                 applicationUserService.saveAppUser(applicationUser);
-                productRepository.deleteById(id);
+                if(invoicePositionRepository.findAllByProductId(id).isEmpty())
+                    productRepository.deleteById(id);
                 return true;
             }
         }
