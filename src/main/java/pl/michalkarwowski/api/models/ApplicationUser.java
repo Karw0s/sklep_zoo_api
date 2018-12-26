@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -16,6 +18,7 @@ public class ApplicationUser {
     private Long id;
     private String username;
     private String password;
+    private String email;
 
     @OneToMany
     private List<Product> products;

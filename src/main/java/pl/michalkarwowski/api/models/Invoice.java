@@ -34,6 +34,7 @@ public class Invoice {
     private List<InvoicePosition> positions;
     private Double priceNet;        // netto
     private Double priceGross;      // brutto
+    private Double priceTax;
 
 
 

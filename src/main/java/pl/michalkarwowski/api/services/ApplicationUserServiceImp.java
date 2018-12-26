@@ -1,8 +1,10 @@
 package pl.michalkarwowski.api.services;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
 import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.AppUserDetails;
@@ -16,14 +18,17 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
     private final ApplicationUserRepository applicationUserRepository;
     private final AppUserDetailsRepository appUserDetailsRepository;
     private AddressService addressService;
+    private ModelMapper modelMapper;
 
     @Autowired
     public ApplicationUserServiceImp(ApplicationUserRepository applicationUserRepository,
                                      AppUserDetailsRepository appUserDetailsRepository,
-                                     AddressService addressService) {
+                                     AddressService addressService,
+                                     ModelMapper modelMapper) {
         this.applicationUserRepository = applicationUserRepository;
         this.appUserDetailsRepository = appUserDetailsRepository;
         this.addressService = addressService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -49,7 +54,7 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
 
         applicationUser.setPassword(userRegistrationDTO.getPassword());
         applicationUser.setUsername(userRegistrationDTO.getUsername());
-        userDetails.setEmail(userRegistrationDTO.getEmail());
+        applicationUser.setEmail(userRegistrationDTO.getEmail());
 
         appUserDetailsRepository.save(userDetails);
         applicationUser.setUserDetails(userDetails);
@@ -62,16 +67,31 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
     }
 
     @Override
-    public AppUserDetails updateUserDetails(AppUserDetails appUserDetails) {
+    public AppUserDetails updateUserDetails(AppUserDetailsDTO appUserDetailsDTO) {
+        boolean addressChanged = false;
         ApplicationUser applicationUser = getCurrentUser();
-        Address addressDB = addressService.updateAddress(appUserDetails.getAddress());
-        if (addressDB == null){
-//            addressDB = addressService.createAddress(appUserDetails.getAddress());
+        AppUserDetails appUserDetails = modelMapper.map(appUserDetailsDTO, AppUserDetails.class);
+
+        Address address = modelMapper.map(appUserDetailsDTO.getAddress(), Address.class);
+        address.setId(applicationUser.getUserDetails().getAddress().getId());
+
+        Address addressDB = addressService.updateAddress(address);
+
+        if (addressDB != null) {
+            appUserDetails.setAddress(addressDB);
+            addressChanged = true;
+        } else {
+            appUserDetails.setAddress(address);
         }
-        AppUserDetails appUserDetailsDB = appUserDetailsRepository.save(appUserDetails);
-        appUserDetailsDB.setAddress(addressDB);
-        applicationUser.setUserDetails(appUserDetailsDB);
-        applicationUserRepository.save(applicationUser);
-        return appUserDetailsDB;
+
+        appUserDetails.setId(applicationUser.getUserDetails().getId());
+
+        if (!applicationUser.getUserDetails().equals(appUserDetails) || addressChanged) {
+            AppUserDetails appUserDetailsDB = appUserDetailsRepository.save(appUserDetails);
+            applicationUser.setUserDetails(appUserDetailsDB);
+            applicationUserRepository.save(applicationUser);
+            return appUserDetailsDB;
+        }
+        return null;
     }
 }

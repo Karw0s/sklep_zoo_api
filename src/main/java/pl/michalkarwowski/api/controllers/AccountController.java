@@ -12,6 +12,8 @@ import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.models.AppUserDetails;
 import pl.michalkarwowski.api.services.ApplicationUserService;
 
+import javax.validation.Valid;
+
 @RestController
 public class AccountController {
 
@@ -32,8 +34,11 @@ public class AccountController {
     }
 
     @PutMapping("/account/details")
-    public ResponseEntity<AppUserDetails> updateAccountDetails(@RequestBody AppUserDetails appUserDetails) {
+    public ResponseEntity<AppUserDetails> updateAccountDetails(@Valid @RequestBody AppUserDetailsDTO appUserDetails) {
         AppUserDetails userDetails = applicationUserService.updateUserDetails(appUserDetails);
+        if (appUserDetails == null) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        }
         return new ResponseEntity<>(userDetails, HttpStatus.OK);
     }
 }

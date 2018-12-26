@@ -1,5 +1,6 @@
 package pl.michalkarwowski.api.services;
 
+import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
 import pl.michalkarwowski.api.models.AppUserDetails;
 import pl.michalkarwowski.api.models.ApplicationUser;
@@ -12,5 +13,5 @@ public interface ApplicationUserService {
     ApplicationUser findByUsername(String username);
     ApplicationUser registerAppUser(AppUserRegistrationDTO userRegistrationDTO);
     AppUserDetails getUserDetails();
-    AppUserDetails updateUserDetails(AppUserDetails appUserDetails);
+    AppUserDetails updateUserDetails(AppUserDetailsDTO appUserDetails);
 }
