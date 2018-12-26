@@ -1,5 +1,7 @@
 package pl.michalkarwowski.api.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,14 +27,14 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<String> signUp(@Valid @RequestBody AppUserRegistrationDTO user) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody AppUserRegistrationDTO user) throws JsonProcessingException {
         ApplicationUser user2 = applicationUserService.findByUsername(user.getUsername());
         if (user2 == null) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             applicationUserService.registerAppUser(user);
-            return new ResponseEntity<>("user registered successfully", HttpStatus.CREATED);
+            return new ResponseEntity<>(new ObjectMapper().writeValueAsString("User registered successfully"), HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>("User exists", HttpStatus.OK);
+            return new ResponseEntity<>(new ObjectMapper().writeValueAsString("Użytkownik istnieje"), HttpStatus.EXPECTATION_FAILED);
         }
     }
 }

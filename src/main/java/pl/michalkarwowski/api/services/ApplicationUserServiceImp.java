@@ -45,8 +45,14 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
     @Override
     public ApplicationUser registerAppUser(AppUserRegistrationDTO userRegistrationDTO) {
         ApplicationUser applicationUser = new ApplicationUser();
+        AppUserDetails userDetails = new AppUserDetails();
+
         applicationUser.setPassword(userRegistrationDTO.getPassword());
         applicationUser.setUsername(userRegistrationDTO.getUsername());
+        userDetails.setEmail(userRegistrationDTO.getEmail());
+
+        appUserDetailsRepository.save(userDetails);
+        applicationUser.setUserDetails(userDetails);
         return applicationUserRepository.save(applicationUser);
     }
 
