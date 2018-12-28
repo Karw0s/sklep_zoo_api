@@ -12,4 +12,5 @@ public interface ClientService {
     Client getClient(Integer id);
     Client updateClient(Integer id, ClientDTO client);
     boolean deleteClient(Integer id);
+    Client createCopy(Integer id);
 }

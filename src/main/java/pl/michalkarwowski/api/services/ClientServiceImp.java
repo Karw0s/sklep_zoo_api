@@ -132,4 +132,19 @@ public class ClientServiceImp implements ClientService {
             }
         return false;
     }
+
+    @Override
+    public Client createCopy(Integer id) {
+        ApplicationUser applicationUser = applicationUserService.getCurrentUser();
+        Client client = applicationUser.getClients().stream().filter(c -> c.getId().equals(id)).findAny().orElse(null);
+        if (client != null){
+            Address address = addressService.createAddress(modelMapper.map(client.getAddress(), AddressDTO.class));
+            Client clientCopy = modelMapper.map(modelMapper.map(client, ClientDTO.class), Client.class);
+            clientCopy.setAddress(address);
+            clientCopy = clientRepository.save(clientCopy);
+            return clientCopy;
+        }
+
+        return null;
+    }
 }

@@ -6,7 +6,6 @@ import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.michalkarwowski.api.dto.AddressDTO;
 import pl.michalkarwowski.api.dto.InvoiceListDTO;
 import pl.michalkarwowski.api.dto.clients.BuyerDTO;
 import pl.michalkarwowski.api.dto.clients.ClientDTO;
@@ -104,23 +103,28 @@ public class InvoiceServiceImp implements InvoiceService {
         AppUserDetails seller = appUserDetailsRepository.save(modelMapper.map(sellerDTO, AppUserDetails.class));
         invoiceTmp.setSeller(seller);
 
-//        invoiceTmp.setBuyer(clientService.createClient(modelMapper.map(invoiceDTO.getBuyer(), ClientDTO.class)));
-
-        if (invoiceDTO.getBuyer().getId() != null) {
+        if (invoiceDTO.getBuyer().getId() != null) { // czy id klienta występuje w DTO
             Client buyerDB = clientService.getClient(invoiceDTO.getBuyer().getId());
-            if (buyerDB != null) {
-                if (invoiceDTO.getBuyer().equals(modelMapper.map(buyerDB, BuyerDTO.class))) {
-                    Client buyer = modelMapper.map(invoiceDTO.getBuyer(), Client.class);
-                    buyer.setAddress(addressService.createAddress(modelMapper.map(invoiceDTO.getBuyer().getAddress(), AddressDTO.class)));
-                    invoiceTmp.setBuyer(clientRepository.save(buyer));
-                } else {
-                    invoiceTmp.setBuyer(clientService.createClient(modelMapper.map(invoiceDTO.getBuyer(), ClientDTO.class)));
+
+            if (buyerDB == null) { // stwórz bo nie ma w bazie
+                Client buyer = clientService.createClient(modelMapper.map(invoiceDTO.getBuyer(), ClientDTO.class));
+                invoiceTmp.setOriginalBuyerId(buyer.getId());
+                invoiceTmp.setBuyer(clientService.createCopy(buyer.getId()));
+            } else { // jest w bazie
+                if (invoiceDTO.getBuyer().equals(modelMapper.map(buyerDB, BuyerDTO.class))) { // taki sam, zapisz kopię
+                    invoiceTmp.setOriginalBuyerId(buyerDB.getId());
+                    invoiceTmp.setBuyer(clientService.createCopy(buyerDB.getId()));
+                } else { // update, kopia
+                    ClientDTO buyer = modelMapper.map(invoiceDTO.getBuyer(), ClientDTO.class);
+                    Client buyerCopy = clientService.updateClient(buyerDB.getId(), buyer);
+                    invoiceTmp.setOriginalBuyerId(buyerCopy.getId());
+                    invoiceTmp.setBuyer(clientService.createCopy(buyerDB.getId()));
                 }
-            } else {
-                invoiceTmp.setBuyer(clientService.createClient(modelMapper.map(invoiceDTO.getBuyer(), ClientDTO.class)));
             }
-        } else {
-            invoiceTmp.setBuyer(clientService.createClient(modelMapper.map(invoiceDTO.getBuyer(), ClientDTO.class)));
+        } else { //stworz klienta, kopia
+            Client buyer = clientService.createClient(modelMapper.map(invoiceDTO.getBuyer(), ClientDTO.class));
+            invoiceTmp.setOriginalBuyerId(buyer.getId());
+            invoiceTmp.setBuyer(clientService.createCopy(buyer.getId()));
         }
 
         invoiceTmp.setCreated(new Date());
@@ -163,14 +167,18 @@ public class InvoiceServiceImp implements InvoiceService {
         Invoice invoice = invoiceRepository.getById(id);
         if (applicationUser.getInvoices().contains(invoice)) {
             for (InvoicePosition position : invoice.getPositions()) {
-                if (!applicationUser.getProducts().contains(position.getProduct())) {
-                    productRepository.deleteById(position.getProduct().getId());
+                if (position.getProduct() != null) {
+                    if (!applicationUser.getProducts().contains(position.getProduct())) {
+                        productRepository.deleteById(position.getProduct().getId());
+                    }
                 }
+                invoicePosRepository.deleteById(position.getId());
             }
             invoice.getPositions().removeAll(invoice.getPositions());
 
             if (!applicationUser.getClients().contains(invoice.getBuyer())) {
-                clientRepository.deleteById(invoice.getBuyer().getId());
+                Integer id1 = invoice.getBuyer().getId();
+                clientRepository.deleteById(id1);
             }
 
             appUserDetailsRepository.deleteById(invoice.getSeller().getId());
