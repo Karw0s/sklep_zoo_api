@@ -5,6 +5,7 @@ import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.clients.BuyerDTO;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class InvoiceDTO {
 
     @NotNull
+    @Pattern(regexp = "^[1-9]+[0-9]*/(1[0-2]|0[1-9])/[0-9]{4}$", message = "Invalid Invoice number")
     private String number;
     @NotNull
     private Date issueDate;

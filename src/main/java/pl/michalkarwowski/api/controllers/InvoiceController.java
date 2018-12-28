@@ -7,17 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.michalkarwowski.api.dto.ErrorMessage;
 import pl.michalkarwowski.api.dto.InvoiceListDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceNextNumberDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoicePositionDTO;
+import pl.michalkarwowski.api.exceptions.InvoiceExistsException;
 import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.models.InvoicePosition;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.InvoiceService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.websocket.server.PathParam;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -46,8 +53,14 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoices")
-    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody InvoiceDTO invoiceDTO) {
-        Invoice newInvoice = invoiceService.createInvoice(invoiceDTO);
+    public ResponseEntity<?> createInvoice(@Valid @RequestBody InvoiceDTO invoiceDTO) {
+        Invoice newInvoice = null;
+        try {
+            newInvoice = invoiceService.createInvoice(invoiceDTO);
+        } catch (InvoiceExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ErrorMessage.builder().errorField("number").message(e.getMessage()).build());
+        }
         return new ResponseEntity<>(newInvoice, HttpStatus.CREATED);
     }
 
@@ -100,7 +113,14 @@ public class InvoiceController {
     }
 
     @GetMapping("/invoices/next-number")
-    public ResponseEntity<InvoiceNextNumberDTO> getNextInvoiceNumber() {
-        return null;
+    public ResponseEntity<?> getNextInvoiceNumber(@RequestParam String issueDate) {
+        Date issueDateInvoice = null;
+        try {
+            issueDateInvoice = DateFormat.getDateInstance().parse(issueDate);
+        } catch (ParseException e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                    .body(ErrorMessage.builder().errorField("RequestParam").message("Canot Parse RequestParam").build());
+        }
+        return new ResponseEntity<>(InvoiceNextNumberDTO.builder().number(invoiceService.nextInvoiceNumber(issueDateInvoice)).build(), HttpStatus.OK);
     }
 }

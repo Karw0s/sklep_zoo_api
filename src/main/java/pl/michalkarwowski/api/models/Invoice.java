@@ -34,6 +34,8 @@ public class Invoice {
     private Double priceNet;        // netto
     private Double priceGross;      // brutto
     private Double priceTax;
+    private Date created;
+    private Date lastUpdated;
 
 
 
