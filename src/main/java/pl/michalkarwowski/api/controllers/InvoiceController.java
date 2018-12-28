@@ -85,13 +85,19 @@ public class InvoiceController {
     }
 
     @PutMapping("/invoices/{id}")
-    public ResponseEntity<Invoice> updateInvoice(@PathVariable Long id,
-                                                 @Valid @RequestBody Invoice invoice) {
-//        Invoice updatedInvoice = invoiceService.updateInvoice(invoice);
-//        if (updatedInvoice == null) {
+    public ResponseEntity<?> updateInvoice(@PathVariable Long id,
+                                                 @Valid @RequestBody InvoiceDTO invoiceDTO) {
+        Invoice updatedInvoice = null;
+        try {
+            updatedInvoice = invoiceService.updateInvoice(id, invoiceDTO);
+        } catch (InvoiceExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ErrorMessage.builder().errorField("number").message(e.getMessage()).build());
+        }
+        if (updatedInvoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//        return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
     }
 
     @DeleteMapping("/invoices/{id}")

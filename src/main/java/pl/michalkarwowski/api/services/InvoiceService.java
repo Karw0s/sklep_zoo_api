@@ -13,7 +13,7 @@ import java.util.List;
 public interface InvoiceService {
     Invoice createInvoice(InvoiceDTO invoiceDTO) throws InvoiceExistsException;
     Invoice getInvoice(Long invoiceNumber);
-    Invoice updateInvoice(Long id, InvoiceDTO invoice);
+    Invoice updateInvoice(Long id, InvoiceDTO invoice) throws InvoiceExistsException;
     boolean deleteInvoice(Long id);
     Invoice addNewPosition(Product product, String invoiceID, Integer amount);
     List<InvoiceListDTO> getInvoiceList();

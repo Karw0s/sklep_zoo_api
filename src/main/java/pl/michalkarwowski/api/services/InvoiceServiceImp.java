@@ -145,19 +145,28 @@ public class InvoiceServiceImp implements InvoiceService {
         Optional<Invoice> invoice = invoiceRepository.findById(id);
         if (invoice.isPresent()) {
             if (applicationUserService.getCurrentUser().getInvoices().contains(invoice.get()))
+                invoice.get().getPositions().sort(Comparator.comparing(InvoicePosition::getOrdinalNumber));
                 return invoice.get();
         }
         return null;
     }
 
     @Override
-    public Invoice updateInvoice(Long id, InvoiceDTO invoiceDTO) {
+    public Invoice updateInvoice(Long id, InvoiceDTO invoiceDTO) throws InvoiceExistsException {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         Invoice invoiceDB = invoiceRepository.findById(id).orElse(null);
         if (invoiceDB != null) {
             if (applicationUser.getInvoices().contains(invoiceDB)) {
                 InvoiceDTO invoiceDBDto = modelMapper.map(invoiceDB, InvoiceDTO.class);
                 if (!invoiceDBDto.equals(invoiceDTO)) {
+                    if (!invoiceDB.getNumber().equals(invoiceDTO.getNumber())) {
+                        if (applicationUser.getInvoices().stream().filter(i -> i.getNumber().equals(invoiceDTO.getNumber())).findAny().orElse(null) == null) {
+                            throw new InvoiceExistsException("Invoice with that number already exists");
+                        }
+                        invoiceDB.setNumber(invoiceDTO.getNumber());
+                        invoiceDB = invoiceRepository.save(invoiceDB);
+                    }
+
                     if (!invoiceDBDto.getBuyer().equals(invoiceDTO.getBuyer())) {
                         // update buyer
                         Address buyerDbAddress = invoiceDB.getBuyer().getAddress();
@@ -175,20 +184,19 @@ public class InvoiceServiceImp implements InvoiceService {
                             invoiceDB.setBuyer(clientRepository.save(buyer));
                         }
                     }
+
                     if (!invoiceDBDto.getSeller().equals(invoiceDTO.getSeller())) {
                         // update seller
                         System.out.println("update sellers");
                         AppUserDetailsDTO seller = invoiceDTO.getSeller();
-                        Address sellerDbAddress = invoiceDB.getSeller().getAddress();
-                        if(!invoiceDBDto.getSeller().getAddress().equals(seller.getAddress())) {
+                        if (!invoiceDBDto.getSeller().getAddress().equals(seller.getAddress())) {
                             Address sellerNewAddress = modelMapper.map(seller.getAddress(), Address.class);
                             sellerNewAddress.setId(invoiceDB.getSeller().getAddress().getId());
-                            sellerDbAddress = addressService.updateAddress(sellerNewAddress);
+                            Address sellerDbAddress = addressService.updateAddress(sellerNewAddress);
                             invoiceDB.getSeller().setAddress(sellerDbAddress);
                             invoiceDBDto = modelMapper.map(invoiceDB, InvoiceDTO.class);
                         }
                         if (!invoiceDBDto.getSeller().equals(invoiceDTO.getSeller())) {
-//                            AppUserDetails sellerDetails = modelMapper.map(invoiceDTO.getSeller(), AppUserDetails.class);
                             invoiceDB.getSeller().setCompanyName(seller.getCompanyName());
                             invoiceDB.getSeller().setFirstName(seller.getFirstName());
                             invoiceDB.getSeller().setLastName(seller.getLastName());
@@ -197,57 +205,78 @@ public class InvoiceServiceImp implements InvoiceService {
                             invoiceDB.getSeller().setBank(seller.getBank());
                             invoiceDB.getSeller().setBankAccountNumber(seller.getBankAccountNumber());
                             invoiceDB.setSeller(appUserDetailsRepository.save(invoiceDB.getSeller()));
-
                         }
-
                     }
+
                     if (!invoiceDBDto.getPositions().equals(invoiceDTO.getPositions())) {
                         // update positions
-                        System.out.println("update positions");
-
                         ModelMapper modelMapper2 = new ModelMapper();
                         modelMapper2.getConfiguration().setAmbiguityIgnored(true);
                         modelMapper2.createTypeMap(InvoicePositionDTO.class, InvoicePosition.class)
                                 .addMappings(mapper -> mapper.map(InvoicePositionDTO::getProductId, InvoicePosition::setProduct));
 
-                        List<InvoicePosition> positons = new ArrayList<>();
+                        List<InvoicePosition> positionsDTO = new ArrayList<>();
 
                         for (InvoicePositionDTO position : invoiceDTO.getPositions()) {
                             InvoicePosition invoicePosition = modelMapper2.map(position, InvoicePosition.class);
                             if (position.getProductId() != null) {
                                 invoicePosition.setProduct(productService.getProduct(position.getProductId()));
                             }
-                            positons.add(invoicePosition);
+                            positionsDTO.add(invoicePosition);
                         }
 
-                        if(invoiceDB.getPositions().size() == invoiceDTO.getPositions().size()) { // któras pozycja jest zmodyfikowana
+//                        for (InvoicePosition position : invoiceDB.getPositions()) {
+//                            invoicePosRepository.deleteById(position.getId());
+//                        }
 
-                        } else if (invoiceDB.getPositions().size() < invoiceDTO.getPositions().size()) { // dodano pozycję
-
-                        } else {    // usunięto pozycję
-
+                        Map<Long, Boolean> isPresent = new HashMap<>();
+                        for (InvoicePosition position : invoiceDB.getPositions()) {
+                            isPresent.put(position.getId(), false);
                         }
+
+                        for (InvoicePosition positionDTO : positionsDTO) {
+                            if (isPresent.containsKey(positionDTO.getId())) {
+                                isPresent.replace(positionDTO.getId(), true);
+                            }
+                        }
+
+                        if (isPresent.containsValue(false)) {
+                            for (InvoicePosition position : invoiceDB.getPositions()) {
+                                if(!isPresent.get(position.getId())) {
+                                    invoicePosRepository.deleteById(position.getId());
+                                }
+                            }
+                        }
+
+
+
+//                        if (invoiceDB.getPositions().size() == invoiceDTO.getPositions().size()) { // któras pozycja jest zmodyfikowana
+//
+//                        } else if (invoiceDB.getPositions().size() < invoiceDTO.getPositions().size()) { // dodano pozycję
+//
+//
+//                        } else {    // usunięto pozycję
+//
+//                        }
+
+                        invoiceDB.setPositions(positionsDTO);
+                        invoicePosRepository.saveAll(invoiceDB.getPositions());
                     }
-                    // chceck invoice details
+                    // update invoice details
+
+                    invoiceDB.setIssueDate(invoiceDTO.getIssueDate());
+                    invoiceDB.setIssuePlace(invoiceDTO.getIssuePlace());
+                    invoiceDB.setSaleDate(invoiceDTO.getSaleDate());
+                    invoiceDB.setPaymentType(invoiceDTO.getPaymentType());
+                    invoiceDB.setPriceNet(invoiceDTO.getPriceNet());
+                    invoiceDB.setPriceGross(invoiceDTO.getPriceGross());
+                    invoiceDB.setPriceTax(invoiceDTO.getPriceTax());
+                    invoiceDB.setShowPKWIUCode(invoiceDTO.isShowPKWIUCode());
+                    invoiceDB.setLastUpdated(new Date());
+                    return invoiceRepository.save(invoiceDB);
                 }
             }
         }
-//        int invoiceIndex = applicationUser.getInvoices().indexOf(invoiceRepository.getById(id));
-//        Invoice invoice = null;
-//        if (invoiceIndex != -1){
-//            if (!applicationUser.getInvoices().get(invoiceIndex).equals(newInvoice)){
-//                applicationUser.getInvoices().remove(invoiceIndex);
-//                invoice = invoiceRepository.save(newInvoice);
-//                applicationUser.getInvoices().add(invoice);
-//                applicationUserService.saveAppUser(applicationUser);
-//            }
-//        }
-//        return invoice;
-        return null;
-    }
-
-    Client updateInvoiceBuyer(ClientDTO buyer) {
-
         return null;
     }
 

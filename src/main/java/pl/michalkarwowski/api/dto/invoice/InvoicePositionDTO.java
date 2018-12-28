@@ -14,6 +14,9 @@ public class InvoicePositionDTO {
     private String pkwiuCode;
 
     @NotNull
+    private Integer ordinalNumber;
+
+    @NotNull
     private String name;
     @NotNull
     private String tax;

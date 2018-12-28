@@ -25,7 +25,7 @@ public class AddressServiceImp implements AddressService {
 
     @Override
     public Address getAddress(Long id) {
-        Optional<Address> addressDB = this.addressRepository.findById(id);
+        Optional<Address> addressDB = addressRepository.findById(id);
         if (addressDB.isPresent()) {
             return  addressDB.get();
         }
@@ -41,10 +41,10 @@ public class AddressServiceImp implements AddressService {
     @Override
     public Address updateAddress(Address address) {
         if (address.getId() != null) {
-            Optional<Address> addressDB = this.addressRepository.findById(address.getId());
+            Optional<Address> addressDB = addressRepository.findById(address.getId());
             if (addressDB.isPresent()) {
                 if (!addressDB.get().equals(address)) {
-                    return this.addressRepository.save(address);
+                    return addressRepository.save(address);
                 }
             }
         }

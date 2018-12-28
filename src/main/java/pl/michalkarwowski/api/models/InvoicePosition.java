@@ -18,6 +18,8 @@ public class InvoicePosition {
     @JoinColumn(name = "fk_product")
     private Product product;
 
+    private Integer ordinalNumber;
+
     private String name;
     private String pkwiuCode;
 

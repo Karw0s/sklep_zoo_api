@@ -4,6 +4,7 @@ import lombok.Data;
 import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.clients.BuyerDTO;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
@@ -28,6 +29,7 @@ public class InvoiceDTO {
     @NotNull
     private BuyerDTO buyer;
     @NotNull
+    @NotEmpty
     private List<InvoicePositionDTO> positions;
     @NotNull
     private Double priceNet;        // netto
