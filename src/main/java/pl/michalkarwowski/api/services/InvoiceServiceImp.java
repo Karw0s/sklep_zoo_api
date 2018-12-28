@@ -328,16 +328,13 @@ public class InvoiceServiceImp implements InvoiceService {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         List<Invoice> invoiceList = applicationUser.getInvoices();
         List<InvoiceListDTO> invoiceListDTO = new ArrayList<>();
+        ModelMapper modelMapper2 = new ModelMapper();
+        modelMapper2.createTypeMap(Invoice.class, InvoiceListDTO.class)
+                .addMappings(mapper -> {
+                    mapper.map(src -> src.getBuyer().getCompanyName(), InvoiceListDTO::setBuyerCompanyName);
+                });
         for (Invoice invoice : invoiceList) {
-            invoiceListDTO.add(InvoiceListDTO.builder()
-                    .id(invoice.getId())
-                    .number(invoice.getNumber())
-                    .issueDate(invoice.getIssueDate())
-                    .paymentType(invoice.getPaymentType())
-                    .buyerCompanyName(invoice.getBuyer().getCompanyName())
-                    .priceNet(invoice.getPriceNet())
-                    .priceGross(invoice.getPriceGross())
-                    .build());
+            invoiceListDTO.add(modelMapper2.map(invoice, InvoiceListDTO.class));
         }
         invoiceListDTO.sort(Comparator.comparing(InvoiceListDTO::getIssueDate));
         Collections.reverse(invoiceListDTO);
