@@ -35,4 +35,6 @@ public class InvoiceDTO {
     private Double priceGross;      // brutto
     @NotNull
     private Double priceTax;
+    @NotNull
+    private boolean showPKWIUCode;
 }

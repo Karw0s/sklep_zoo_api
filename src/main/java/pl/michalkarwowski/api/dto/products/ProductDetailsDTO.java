@@ -12,4 +12,5 @@ public class ProductDetailsDTO {
     private Double priceBrutto;
     private Integer tax;
     private String unitOfMeasure;
+    private String pkwiuCode;
 }

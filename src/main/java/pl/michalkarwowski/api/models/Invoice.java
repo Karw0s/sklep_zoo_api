@@ -33,6 +33,7 @@ public class Invoice {
     private Double priceTax;
     private Date created;
     private Date lastUpdated;
+    private boolean showPKWIUCode;
 
 
 
