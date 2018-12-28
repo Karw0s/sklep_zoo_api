@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class InvoicePositionDTO {
 
+    private Long id;
     private Integer invoiceId;
     private Integer productId;
 

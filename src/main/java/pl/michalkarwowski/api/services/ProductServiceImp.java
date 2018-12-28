@@ -95,7 +95,7 @@ public class ProductServiceImp implements ProductService {
         if (applicationUser.getProducts().contains(product)) {
             if (applicationUser.getProducts().remove(productRepository.getById(id))) {
                 applicationUserService.saveAppUser(applicationUser);
-                if(invoicePositionRepository.findAllByProductId(id).isEmpty())
+                if(invoicePositionRepository.findAllByProductId(Long.parseLong(Integer.toString(id))).isEmpty())
                     productRepository.deleteById(id);
                 return true;
             }

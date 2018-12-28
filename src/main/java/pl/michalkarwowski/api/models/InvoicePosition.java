@@ -13,7 +13,7 @@ public class InvoicePosition {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
     @ManyToOne
     @JoinColumn(name = "fk_product")
     private Product product;
