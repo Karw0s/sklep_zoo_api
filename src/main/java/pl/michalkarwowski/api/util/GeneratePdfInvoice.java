@@ -18,11 +18,12 @@ public class GeneratePdfInvoice {
 
     private static final String FONT = "static/fonts/FreeSans.ttf";
     private static final String FONT_BOLD = "static/fonts/FreeSansBold.ttf";
+    private static final DecimalFormat DF = new DecimalFormat("#.00");
+    private static String currency = "zł";
 
     public static ByteArrayInputStream pdfInvoice(Invoice invoice, boolean orginalPlusCopy) {
         Document document = new Document(PageSize.A4);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DecimalFormat df = new DecimalFormat("#.00");
 
 
         try {
@@ -106,28 +107,8 @@ public class GeneratePdfInvoice {
             buyerAndSellerTable.addCell(basCell);
             buyerAndSellerTable.addCell(basCell);
 
-
-            PdfPTable positionSumUp = new PdfPTable(3);
-            positionSumUp.setWidthPercentage(95);
-            if(invoice.isShowPKWIUCode())
-                positionSumUp.setWidths(new int[]{16, 4, 10});
-            else
-                positionSumUp.setWidths(new int[]{14, 4, 7});
-
-            positionSumUp.setPaddingTop(7f);
-
-            basCell = new PdfPCell();
-            basCell.setMinimumHeight(10f);
-            basCell.setBorder(Rectangle.NO_BORDER);
-            positionSumUp.addCell(basCell);
-
-            basCell = new PdfPCell(new Phrase("Wartość netto"));
-            basCell.setMinimumHeight(10f);
-            basCell.setBorder(Rectangle.NO_BORDER);
-            positionSumUp.addCell(basCell);
-
             Paragraph toPay = new Paragraph(
-                    new Phrase(String.format("\nDO ZAPŁATY: %s zł", df.format(invoice.getPriceGross())), toPayFont));
+                    new Phrase(String.format("\nDO ZAPŁATY: %s %s", DF.format(invoice.getPriceGross()), currency), toPayFont));
             toPay.setPaddingTop(20f);
 
             document.open();
@@ -136,7 +117,7 @@ public class GeneratePdfInvoice {
             document.add(buyerAndSellerTable);
             document.add(createDetailsTable(invoice));
             document.add(createPositionTable(invoice));
-            document.add(positionSumUp);
+            document.add(createPricesSummaryTable(invoice));
             document.add(toPay);
             document.close();
         } catch (DocumentException ex) {
@@ -144,6 +125,84 @@ public class GeneratePdfInvoice {
         }
         return new ByteArrayInputStream(out.toByteArray());
 
+    }
+
+    private static PdfPTable createPricesSummaryTable(Invoice invoice) throws DocumentException {
+        PdfPTable positionSumUp = new PdfPTable(4);
+
+        positionSumUp.setWidthPercentage(95);
+        positionSumUp.setWidths(new int[]{18, 5, 5, 2});
+        positionSumUp.setPaddingTop(7f);
+
+        Font normalD = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 10f);
+
+        PdfPCell basCell = new PdfPCell();
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase("Wartość netto", normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceNet()), normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase(currency, normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell();
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase("Wartość VAT", normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceTax()), normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase(currency, normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell();
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase("Wartość brutto", normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceGross()), normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        positionSumUp.addCell(basCell);
+
+        basCell = new PdfPCell(new Phrase(currency, normalD));
+        basCell.setMinimumHeight(10f);
+        basCell.setBorder(Rectangle.NO_BORDER);
+        positionSumUp.addCell(basCell);
+
+        return positionSumUp;
     }
 
     private static PdfPTable createDetailsTable(Invoice invoice) throws DocumentException {
@@ -167,8 +226,7 @@ public class GeneratePdfInvoice {
         detailsCell.setBorder(Rectangle.NO_BORDER);
         detailsTable.addCell(detailsCell);
 
-        if (!invoice.getSeller().getBank().isEmpty() && !invoice.getSeller().getBankAccountNumber().isEmpty())
-        {
+        if (!invoice.getSeller().getBank().isEmpty() && !invoice.getSeller().getBankAccountNumber().isEmpty()) {
             detailsCell = new PdfPCell(new Phrase("Bank", bold));
             detailsCell.setBorder(Rectangle.NO_BORDER);
             detailsTable.addCell(detailsCell);
