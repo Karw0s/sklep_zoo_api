@@ -109,15 +109,6 @@ public class InvoiceController {
         }
     }
 
-
-
-    @PostMapping("/invoices/addProduct")
-    public ResponseEntity<Invoice> addInvoicePosition(@RequestBody String invoiceID,
-                                                      @RequestBody Product product,
-                                                      @RequestBody Integer amount) {
-        return new ResponseEntity<>(invoiceService.addNewPosition(product, invoiceID, amount), HttpStatus.OK);
-    }
-
     @GetMapping("/invoices/next-number")
     public ResponseEntity<?> getNextInvoiceNumber(@RequestParam String issueDate) {
         Date issueDateInvoice = null;

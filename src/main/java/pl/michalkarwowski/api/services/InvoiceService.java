@@ -15,7 +15,6 @@ public interface InvoiceService {
     Invoice getInvoice(Long invoiceNumber);
     Invoice updateInvoice(Long id, InvoiceDTO invoice) throws InvoiceExistsException;
     boolean deleteInvoice(Long id);
-    Invoice addNewPosition(Product product, String invoiceID, Integer amount);
     List<InvoiceListDTO> getInvoiceList();
     String nextInvoiceNumber(Date issueDate);
     Document generateInvoicePDF(Long id);

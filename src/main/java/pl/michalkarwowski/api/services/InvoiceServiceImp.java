@@ -225,10 +225,6 @@ public class InvoiceServiceImp implements InvoiceService {
                             positionsDTO.add(invoicePosition);
                         }
 
-//                        for (InvoicePosition position : invoiceDB.getPositions()) {
-//                            invoicePosRepository.deleteById(position.getId());
-//                        }
-
                         Map<Long, Boolean> isPresent = new HashMap<>();
                         for (InvoicePosition position : invoiceDB.getPositions()) {
                             isPresent.put(position.getId(), false);
@@ -247,17 +243,6 @@ public class InvoiceServiceImp implements InvoiceService {
                                 }
                             }
                         }
-
-
-
-//                        if (invoiceDB.getPositions().size() == invoiceDTO.getPositions().size()) { // któras pozycja jest zmodyfikowana
-//
-//                        } else if (invoiceDB.getPositions().size() < invoiceDTO.getPositions().size()) { // dodano pozycję
-//
-//
-//                        } else {    // usunięto pozycję
-//
-//                        }
 
                         invoiceDB.setPositions(positionsDTO);
                         invoicePosRepository.saveAll(invoiceDB.getPositions());
@@ -309,18 +294,6 @@ public class InvoiceServiceImp implements InvoiceService {
             }
         }
         return false;
-    }
-
-    @Override
-    public Invoice addNewPosition(Product product, String invoiceID, Integer amount) {
-//        Invoice invoice = invoiceRepository.findByNr(invoiceID);
-//        InvoicePosition invoicePosition = new InvoicePosition();
-//        invoicePosition.setInvoice(invoice);
-//        invoicePosition.setProduct(product);
-//        invoicePosition.setAmount(amount);
-//        invoicePosition = invoicePositionRepository.save(invoicePosition);
-//        invoice.getInvoicePosition().add(invoicePosition);
-        return null;
     }
 
     @Override
