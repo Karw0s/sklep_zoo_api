@@ -121,7 +121,7 @@ public class InvoiceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        ByteArrayInputStream bis = GeneratePdfInvoice.pdfInvoice(invoice);
+        ByteArrayInputStream bis = GeneratePdfInvoice.pdfInvoice(invoice, false);
 
         String filename = "faktura_nr_" + invoice.getNumber().replace("/", "-") + ".pdf";
 

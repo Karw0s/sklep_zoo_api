@@ -20,7 +20,8 @@ public class GenerateInvoiceNumber {
 
         String[] numberSplit = new String[0];
 
-        if (nextNumberByIssueDate != null) {    // invoiceNumber is matching issueDate
+        if (nextNumberByIssueDate != null) {
+            // invoiceNumber is matching issueDate
 
             if (nextNumberByIssueDate.getLastInvoiceNumber().equals(invoiceNumber)) {   // first invoice in issueDate month
 
@@ -64,7 +65,6 @@ public class GenerateInvoiceNumber {
                     while (exists) {
                         int num = invoiceNum;
                         Invoice invoice = userInvoices.stream().filter(i -> i.getNumber().equals(num + 1 + "/" + monthString + "/" + year)).findAny().orElse(null);
-//                                invoiceRepository.findByNumber(invoiceNum + 1 + "/" + monthString + "/" + year);  //zamienic na szukanie w fakturach usera
                         if (invoice != null) {
                             invoiceNum += 1;
                         } else {
