@@ -14,6 +14,7 @@ import pl.michalkarwowski.api.dto.invoice.InvoicePositionDTO;
 import pl.michalkarwowski.api.exceptions.InvoiceExistsException;
 import pl.michalkarwowski.api.models.*;
 import pl.michalkarwowski.api.repositories.*;
+import pl.michalkarwowski.api.util.GenerateInvoiceNumber;
 
 import java.util.*;
 
@@ -134,7 +135,11 @@ public class InvoiceServiceImp implements InvoiceService {
         user.getInvoices().add(invoice);
         applicationUserService.saveAppUser(user);
 
-        generateNextInvoiceNumber(invoice.getIssueDate(), invoice.getNumber());
+        invoiceNumberRepository.save(GenerateInvoiceNumber
+                .generateNextInvoiceNumber(invoice.getIssueDate(),
+                        invoice.getNumber(),
+                        user.getInvoiceNextNumber(),
+                        user.getInvoices()));
 
         return invoice;
     }
@@ -145,7 +150,7 @@ public class InvoiceServiceImp implements InvoiceService {
         if (invoice.isPresent()) {
             if (applicationUserService.getCurrentUser().getInvoices().contains(invoice.get()))
                 invoice.get().getPositions().sort(Comparator.comparing(InvoicePosition::getOrdinalNumber));
-                return invoice.get();
+            return invoice.get();
         }
         return null;
     }
@@ -159,7 +164,7 @@ public class InvoiceServiceImp implements InvoiceService {
                 InvoiceDTO invoiceDBDto = modelMapper.map(invoiceDB, InvoiceDTO.class);
                 if (!invoiceDBDto.equals(invoiceDTO)) {
                     if (!invoiceDB.getNumber().equals(invoiceDTO.getNumber())) {
-                        if (applicationUser.getInvoices().stream().filter(i -> i.getNumber().equals(invoiceDTO.getNumber())).findAny().orElse(null) == null) {
+                        if (applicationUser.getInvoices().stream().filter(i -> i.getNumber().equals(invoiceDTO.getNumber())).findAny().orElse(null) != null) {
                             throw new InvoiceExistsException("Invoice with that number already exists");
                         }
                         invoiceDB.setNumber(invoiceDTO.getNumber());
@@ -237,7 +242,7 @@ public class InvoiceServiceImp implements InvoiceService {
 
                         if (isPresent.containsValue(false)) {
                             for (InvoicePosition position : invoiceDB.getPositions()) {
-                                if(!isPresent.get(position.getId())) {
+                                if (!isPresent.get(position.getId())) {
                                     invoicePosRepository.deleteById(position.getId());
                                 }
                             }
@@ -345,7 +350,7 @@ public class InvoiceServiceImp implements InvoiceService {
         }
     }
 
-    private InvoiceNextNumber generateNextInvoiceNumber(Date issueDate, String invoiceNumber) {
+    /*private InvoiceNextNumber generateNextInvoiceNumber(Date issueDate, String invoiceNumber) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         List<InvoiceNextNumber> invoiceNumberList = applicationUser.getInvoiceNextNumber();
         Calendar calendar = new GregorianCalendar();
@@ -450,5 +455,5 @@ public class InvoiceServiceImp implements InvoiceService {
 //            }
         }
         return null;
-    }
+    }*/
 }
