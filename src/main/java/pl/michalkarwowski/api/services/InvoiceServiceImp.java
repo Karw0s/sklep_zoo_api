@@ -1,6 +1,5 @@
 package pl.michalkarwowski.api.services;
 
-import com.itextpdf.text.Document;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
@@ -344,11 +343,6 @@ public class InvoiceServiceImp implements InvoiceService {
         } else {
             return res.getNextInvoiceNumber();
         }
-    }
-
-    @Override
-    public Document generateInvoicePDF(Long id) {
-        return null;
     }
 
     private InvoiceNextNumber generateNextInvoiceNumber(Date issueDate, String invoiceNumber) {

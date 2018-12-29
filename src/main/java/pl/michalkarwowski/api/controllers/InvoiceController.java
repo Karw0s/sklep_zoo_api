@@ -4,7 +4,10 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.dto.ErrorMessage;
@@ -17,10 +20,12 @@ import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.models.InvoicePosition;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.InvoiceService;
+import pl.michalkarwowski.api.util.GeneratePdfInvoice;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.websocket.server.PathParam;
+import java.io.ByteArrayInputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -86,7 +91,7 @@ public class InvoiceController {
 
     @PutMapping("/invoices/{id}")
     public ResponseEntity<?> updateInvoice(@PathVariable Long id,
-                                                 @Valid @RequestBody InvoiceDTO invoiceDTO) {
+                                           @Valid @RequestBody InvoiceDTO invoiceDTO) {
         Invoice updatedInvoice = null;
         try {
             updatedInvoice = invoiceService.updateInvoice(id, invoiceDTO);
@@ -107,6 +112,26 @@ public class InvoiceController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @GetMapping("/invoices/{id}/pdf")
+    public ResponseEntity<InputStreamResource> invoicePdf(@PathVariable Long id) {
+        Invoice invoice = invoiceService.getInvoice(id);
+        if (invoice == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        ByteArrayInputStream bis = GeneratePdfInvoice.pdfInvoice(invoice);
+
+        String filename = "faktura_nr_" + invoice.getNumber().replace("/", "-") + ".pdf";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=" + filename);
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
 
     @GetMapping("/invoices/next-number")
