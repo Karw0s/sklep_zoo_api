@@ -19,10 +19,11 @@ public class GeneratePdfInvoice {
 
     private static final String FONT = "static/fonts/FreeSans.ttf";
     private static final String FONT_BOLD = "static/fonts/FreeSansBold.ttf";
+    private static final String FONT_ITALIC = "static/fonts/FreeSansOblique.ttf";
     private static final String ORIGINAL = "Oryginał";
     private static final String COPY = "Kopia";
     private static final DecimalFormat DF = new DecimalFormat("#.00");
-    private static String currency = "zł";
+    private static String currency = "PLN";
 
     public static ByteArrayInputStream pdfInvoice(Invoice invoice, boolean originalPlusCopy) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -55,6 +56,7 @@ public class GeneratePdfInvoice {
                 Font headerFont = FontFactory.getFont(FONT, BaseFont.IDENTITY_H, true, 8f);
                 Font invoiceNumberFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 15f);
                 Font toPayFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 11f);
+                Font italicFont = FontFactory.getFont(FONT_ITALIC, BaseFont.IDENTITY_H, true, 9f);
 
                 PdfPCell hcell;
                 hcell = new PdfPCell(new Phrase("Miejsce wystawienia", headerFont));
@@ -126,6 +128,10 @@ public class GeneratePdfInvoice {
                 Paragraph toPay = new Paragraph(
                         new Phrase(String.format("\nDO ZAPŁATY: %s %s", DF.format(invoice.getPriceGross()), currency), toPayFont));
                 toPay.setPaddingTop(20f);
+                String[] amount = DF.format(invoice.getPriceGross()).split(",");
+                Paragraph amountInWords = new Paragraph(
+                        new Phrase(String.format("Słownie: %s%s %d/100", NumberToWord.translate(Long.parseLong(amount[0])), currency, Long.parseLong(amount[1])), italicFont)
+                );
 
                 document.open();
                 document.add(headerTable);
@@ -135,6 +141,7 @@ public class GeneratePdfInvoice {
                 document.add(createPositionTable(invoice));
                 document.add(createPricesSummaryTable(invoice));
                 document.add(toPay);
+                document.add(amountInWords);
                 document.close();
             } catch (DocumentException ex) {
                 Logger.getLogger(GeneratePdfInvoice.class.getName()).log(Level.SEVERE, null, ex);
