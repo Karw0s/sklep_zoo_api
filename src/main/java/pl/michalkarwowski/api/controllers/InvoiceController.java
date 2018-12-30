@@ -127,6 +127,8 @@ public class InvoiceController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=" + filename);
+        headers.add("Content-Filename", filename);
+        headers.add("Access-Control-Expose-Headers", "Content-Length, Content-Disposition, Content-Filename");
         return ResponseEntity
                 .ok()
                 .headers(headers)
