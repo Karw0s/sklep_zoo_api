@@ -18,13 +18,10 @@ import pl.michalkarwowski.api.dto.invoice.InvoicePositionDTO;
 import pl.michalkarwowski.api.exceptions.InvoiceExistsException;
 import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.models.InvoicePosition;
-import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.InvoiceService;
 import pl.michalkarwowski.api.util.GeneratePdfInvoice;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
-import javax.websocket.server.PathParam;
 import java.io.ByteArrayInputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,20 +33,12 @@ import java.util.List;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
-    private ModelMapper modelMapper;
 
     @Autowired
-    public InvoiceController(InvoiceService invoiceService,
-                             ModelMapper modelMapper) {
+    public InvoiceController(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
-        this.modelMapper = modelMapper;
     }
 
-//    @GetMapping("/invoices")
-//    public ResponseEntity<List<Invoice>> getUserInvoices() {
-//        List<Invoice> invoiceList = invoiceService.getUserInvoices();
-//        return new ResponseEntity<>(invoiceList, HttpStatus.OK);
-//    }
 
     @GetMapping("/invoices")
     public ResponseEntity<List<InvoiceListDTO>> getInvoicesList() {
@@ -115,15 +104,15 @@ public class InvoiceController {
     }
 
     @GetMapping("/invoices/{id}/pdf")
-    public ResponseEntity<InputStreamResource> invoicePdf(@PathVariable Long id) {
+    public ResponseEntity<InputStreamResource> invoicePdf(@PathVariable Long id,
+                                                          @RequestParam boolean originalPlusCopy) {
         Invoice invoice = invoiceService.getInvoice(id);
         if (invoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        ByteArrayInputStream bis = GeneratePdfInvoice.pdfInvoice(invoice, false);
-
-        String filename = "faktura_nr_" + invoice.getNumber().replace("/", "-") + ".pdf";
+        ByteArrayInputStream bis = GeneratePdfInvoice.pdfInvoice(invoice, originalPlusCopy);
+        String filename = String.format("faktura_nr_%s.pdf", invoice.getNumber().replace("/", "-"));
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=" + filename);

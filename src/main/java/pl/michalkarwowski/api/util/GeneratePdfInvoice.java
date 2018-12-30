@@ -8,6 +8,7 @@ import pl.michalkarwowski.api.models.InvoicePosition;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
@@ -18,113 +19,151 @@ public class GeneratePdfInvoice {
 
     private static final String FONT = "static/fonts/FreeSans.ttf";
     private static final String FONT_BOLD = "static/fonts/FreeSansBold.ttf";
+    private static final String ORIGINAL = "Oryginał";
+    private static final String COPY = "Kopia";
     private static final DecimalFormat DF = new DecimalFormat("#.00");
     private static String currency = "zł";
 
-    public static ByteArrayInputStream pdfInvoice(Invoice invoice, boolean orginalPlusCopy) {
-        Document document = new Document(PageSize.A4);
+    public static ByteArrayInputStream pdfInvoice(Invoice invoice, boolean originalPlusCopy) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream original = new ByteArrayOutputStream();
+        ByteArrayOutputStream copy = new ByteArrayOutputStream();
+
+        for (int i = 0; i < (originalPlusCopy ? 2 : 1); i++) {
+            try {
+                Document document = new Document(PageSize.A4, 36f,36f,60f,60f);
+                PdfWriter pdfWriter = PdfWriter.getInstance(document, out);
+
+                Header header;
+                if (originalPlusCopy && i == 0) {
+                    pdfWriter = PdfWriter.getInstance(document, original);
+                    header = new Header();
+                    header.setHeader(new Phrase(ORIGINAL, FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 10f)));
+                    pdfWriter.setPageEvent(header);
+                } else if (originalPlusCopy && i == 1) {
+                    pdfWriter = PdfWriter.getInstance(document, copy);
+                    header = new Header();
+                    header.setHeader(new Phrase(COPY, FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 10f)));
+                    pdfWriter.setPageEvent(header);
+                }
+                pdfWriter.setPageEvent(new PageNumeration());
+                PdfPTable headerTable = new PdfPTable(2);
+                headerTable.getDefaultCell().setBorder(0);
+                headerTable.setWidthPercentage(30);
+
+                Font headFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 13f);
+                Font headerFont = FontFactory.getFont(FONT, BaseFont.IDENTITY_H, true, 8f);
+                Font invoiceNumberFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 15f);
+                Font toPayFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 11f);
+
+                PdfPCell hcell;
+                hcell = new PdfPCell(new Phrase("Miejsce wystawienia", headerFont));
+                hcell.setBorder(Rectangle.NO_BORDER);
+                headerTable.addCell(hcell);
+
+                hcell = new PdfPCell(new Phrase(invoice.getIssuePlace(), headerFont));
+                hcell.setBorder(Rectangle.NO_BORDER);
+                headerTable.addCell(hcell);
+
+                hcell = new PdfPCell(new Phrase("Data wystawienia", headerFont));
+                hcell.setBorder(Rectangle.NO_BORDER);
+                headerTable.addCell(hcell);
+
+                hcell = new PdfPCell(new Phrase(invoice.getIssueDate().toString(), headerFont));
+                hcell.setBorder(Rectangle.NO_BORDER);
+                headerTable.addCell(hcell);
+
+                hcell = new PdfPCell(new Phrase("Data sprzedaży", headerFont));
+                hcell.setBorder(Rectangle.NO_BORDER);
+                headerTable.addCell(hcell);
+
+                hcell = new PdfPCell(new Phrase(invoice.getSaleDate().toString(), headerFont));
+                hcell.setBorder(Rectangle.NO_BORDER);
+                headerTable.addCell(hcell);
+
+                headerTable.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+                Paragraph invoiceNumber = new Paragraph(
+                        new Phrase("Faktura nr " + invoice.getNumber(), invoiceNumberFont));
+
+                PdfPTable buyerAndSellerTable = new PdfPTable(2);
+                buyerAndSellerTable.setWidthPercentage(95);
+                buyerAndSellerTable.setPaddingTop(7f);
+
+                PdfPCell basCell = new PdfPCell();
+                basCell.setMinimumHeight(10f);
+                basCell.setBorder(Rectangle.NO_BORDER);
+                buyerAndSellerTable.addCell(basCell);
+                buyerAndSellerTable.addCell(basCell);
+
+                basCell = new PdfPCell(new Phrase("Sprzedawca/podatnik", headFont));
+                basCell.setBorder(Rectangle.BOTTOM);
+                basCell.setPaddingBottom(5f);
+                buyerAndSellerTable.addCell(basCell);
+
+                basCell = new PdfPCell(new Phrase("Nabywca/płatnik", headFont));
+                basCell.setBorder(Rectangle.BOTTOM);
+                basCell.setPaddingBottom(5f);
+                buyerAndSellerTable.addCell(basCell);
+
+                basCell = new PdfPCell(createPersonDetailTable(invoice.getSeller()));
+                basCell.setBorder(Rectangle.NO_BORDER);
+                basCell.setUseBorderPadding(true);
+                buyerAndSellerTable.addCell(basCell);
 
 
-        try {
-            PdfWriter pdfWriter = PdfWriter.getInstance(document, out);
-            pdfWriter.setPageEvent(new PageNumeration());
-            PdfPTable headerTable = new PdfPTable(2);
-            headerTable.getDefaultCell().setBorder(0);
-            headerTable.setWidthPercentage(30);
+                basCell = new PdfPCell(createPersonDetailTable(invoice.getBuyer()));
+                basCell.setBorder(Rectangle.NO_BORDER);
+                basCell.setUseBorderPadding(true);
+                buyerAndSellerTable.addCell(basCell);
 
-            Font headFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 13f);
-            Font headerFont = FontFactory.getFont(FONT, BaseFont.IDENTITY_H, true, 8f);
-            Font invoiceNumberFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 15f);
-            Font toPayFont = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 11f);
+                basCell = new PdfPCell();
+                basCell.setMinimumHeight(10f);
+                basCell.setBorder(Rectangle.NO_BORDER);
+                buyerAndSellerTable.addCell(basCell);
+                buyerAndSellerTable.addCell(basCell);
 
-            PdfPCell hcell;
-            hcell = new PdfPCell(new Phrase("Miejsce wystawienia", headerFont));
-            hcell.setBorder(Rectangle.NO_BORDER);
-            headerTable.addCell(hcell);
+                Paragraph toPay = new Paragraph(
+                        new Phrase(String.format("\nDO ZAPŁATY: %s %s", DF.format(invoice.getPriceGross()), currency), toPayFont));
+                toPay.setPaddingTop(20f);
 
-            hcell = new PdfPCell(new Phrase(invoice.getIssuePlace(), headerFont));
-            hcell.setBorder(Rectangle.NO_BORDER);
-            headerTable.addCell(hcell);
-
-            hcell = new PdfPCell(new Phrase("Data wystawienia", headerFont));
-            hcell.setBorder(Rectangle.NO_BORDER);
-            headerTable.addCell(hcell);
-
-            hcell = new PdfPCell(new Phrase(invoice.getIssueDate().toString(), headerFont));
-            hcell.setBorder(Rectangle.NO_BORDER);
-            headerTable.addCell(hcell);
-
-            hcell = new PdfPCell(new Phrase("Data sprzedaży", headerFont));
-            hcell.setBorder(Rectangle.NO_BORDER);
-            headerTable.addCell(hcell);
-
-            hcell = new PdfPCell(new Phrase(invoice.getSaleDate().toString(), headerFont));
-            hcell.setBorder(Rectangle.NO_BORDER);
-            headerTable.addCell(hcell);
-
-            headerTable.setHorizontalAlignment(Element.ALIGN_RIGHT);
-
-            Paragraph invoiceNumber = new Paragraph(
-                    new Phrase("Faktura nr " + invoice.getNumber(), invoiceNumberFont));
-
-
-            PdfPTable buyerAndSellerTable = new PdfPTable(2);
-            buyerAndSellerTable.setWidthPercentage(95);
-            buyerAndSellerTable.setPaddingTop(7f);
-
-            PdfPCell basCell = new PdfPCell();
-            basCell.setMinimumHeight(10f);
-            basCell.setBorder(Rectangle.NO_BORDER);
-            buyerAndSellerTable.addCell(basCell);
-            buyerAndSellerTable.addCell(basCell);
-
-
-            basCell = new PdfPCell(new Phrase("Sprzedawca/podatnik", headFont));
-            basCell.setBorder(Rectangle.BOTTOM);
-            basCell.setPaddingBottom(5f);
-            buyerAndSellerTable.addCell(basCell);
-
-            basCell = new PdfPCell(new Phrase("Nabywca/płatnik", headFont));
-            basCell.setBorder(Rectangle.BOTTOM);
-            basCell.setPaddingBottom(5f);
-            buyerAndSellerTable.addCell(basCell);
-
-            basCell = new PdfPCell(createPersonDetailTable(invoice.getSeller()));
-            basCell.setBorder(Rectangle.NO_BORDER);
-            basCell.setUseBorderPadding(true);
-            buyerAndSellerTable.addCell(basCell);
-
-
-            basCell = new PdfPCell(createPersonDetailTable(invoice.getBuyer()));
-            basCell.setBorder(Rectangle.NO_BORDER);
-            basCell.setUseBorderPadding(true);
-            buyerAndSellerTable.addCell(basCell);
-
-            basCell = new PdfPCell();
-            basCell.setMinimumHeight(10f);
-            basCell.setBorder(Rectangle.NO_BORDER);
-            buyerAndSellerTable.addCell(basCell);
-            buyerAndSellerTable.addCell(basCell);
-
-            Paragraph toPay = new Paragraph(
-                    new Phrase(String.format("\nDO ZAPŁATY: %s %s", DF.format(invoice.getPriceGross()), currency), toPayFont));
-            toPay.setPaddingTop(20f);
-
-            document.open();
-            document.add(headerTable);
-            document.add(invoiceNumber);
-            document.add(buyerAndSellerTable);
-            document.add(createDetailsTable(invoice));
-            document.add(createPositionTable(invoice));
-            document.add(createPricesSummaryTable(invoice));
-            document.add(toPay);
-            document.close();
-        } catch (DocumentException ex) {
-            Logger.getLogger(GeneratePdfInvoice.class.getName()).log(Level.SEVERE, null, ex);
+                document.open();
+                document.add(headerTable);
+                document.add(invoiceNumber);
+                document.add(buyerAndSellerTable);
+                document.add(createDetailsTable(invoice));
+                document.add(createPositionTable(invoice));
+                document.add(createPricesSummaryTable(invoice));
+                document.add(toPay);
+                document.close();
+            } catch (DocumentException ex) {
+                Logger.getLogger(GeneratePdfInvoice.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        return new ByteArrayInputStream(out.toByteArray());
+        if (originalPlusCopy) {
+            try {
+                Document document2 = new Document();
+                PdfCopy pdfCopy = new PdfSmartCopy(document2, out);
+                document2.open();
+                PdfReader reader;
 
+                reader = new PdfReader(original.toByteArray());
+                pdfCopy.addDocument(reader);
+                reader.close();
+
+                reader = new PdfReader(copy.toByteArray());
+                pdfCopy.addDocument(reader);
+                reader.close();
+
+                document2.close();
+            } catch (DocumentException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
     private static PdfPTable createPricesSummaryTable(Invoice invoice) throws DocumentException {
@@ -214,7 +253,7 @@ public class GeneratePdfInvoice {
         detailsTable.setWidthPercentage(95);
         detailsTable.setPaddingTop(7f);
 
-        PdfPCell detailsCell = new PdfPCell(new Phrase("Sposób zapłaty", bold));
+        PdfPCell detailsCell = new PdfPCell(new Phrase("Sposób płatności", bold));
         detailsCell.setBorder(Rectangle.NO_BORDER);
         detailsTable.addCell(detailsCell);
 
@@ -474,29 +513,7 @@ public class GeneratePdfInvoice {
         return positionTable;
     }
 
-//    public static void main(String[] args) {
-//        Map<Integer, String> items = new HashMap<Integer, String>() {{
-//            put(1, "LP");
-//            put(2, "Nazwa towaru / usługi");
-//            if(invoice.isShowPKWIUCode()) {
-//                put(3, "Symbol PKWiU");
-//            }
-//            put(4, "Ilość");
-//            put(5, "Cena netto");
-//            put(6, "Wartość netto");
-//            put(7, "VAT %");
-//            put(8, "Wartość VAT");
-//            put(10, "Wartość brutto");
-//        }};
-//
-//
-//        items.forEach((k, v) -> System.out.println("Item : " + k + " Count : " + v));
-//    }
-
     static class PageNumeration extends PdfPageEventHelper {
-        /**
-         * The template with the total number of pages.
-         */
         PdfTemplate total;
 
         private Font normal, normalSmall;
@@ -510,22 +527,10 @@ public class GeneratePdfInvoice {
             }
         }
 
-        /**
-         * Creates the PdfTemplate that will hold the total number of pages.
-         *
-         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onOpenDocument(
-         *com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
-         */
         public void onOpenDocument(PdfWriter writer, Document document) {
             total = writer.getDirectContent().createTemplate(30, 12);
         }
 
-        /**
-         * Adds a header to every page
-         *
-         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onEndPage(
-         *com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
-         */
         public void onEndPage(PdfWriter writer, Document document) {
             PdfPTable table = new PdfPTable(3);
             try {
@@ -553,18 +558,12 @@ public class GeneratePdfInvoice {
                 table.setTotalWidth(document.getPageSize().getWidth()
                         - document.leftMargin() - document.rightMargin());
                 table.writeSelectedRows(0, -1, document.leftMargin(),
-                        document.bottomMargin() + 1, writer.getDirectContent());
+                        document.bottomMargin() - 6, writer.getDirectContent());
             } catch (DocumentException de) {
                 throw new ExceptionConverter(de);
             }
         }
 
-        /**
-         * Fills out the total number of pages before the document is closed.
-         *
-         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onCloseDocument(
-         *com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
-         */
         public void onCloseDocument(PdfWriter writer, Document document) {
             ColumnText.showTextAligned(total, Element.ALIGN_LEFT,
                     new Phrase(String.valueOf(writer.getPageNumber()), normal),
@@ -572,52 +571,29 @@ public class GeneratePdfInvoice {
         }
     }
 
-//    static class Header extends PdfPageEventHelper {
-//        Font font;
-//        PdfTemplate t;
-//        Image total;
-//
-//        @Override
-//        public void onOpenDocument(PdfWriter writer, Document document) {
-//            t = writer.getDirectContent().createTemplate(30, 16);
-//            try {
-//                total = Image.getInstance(t);
-//                total.setRole(PdfName.ARTIFACT);
-//                font =  new Font(BaseFont.createFont(FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 10);
-//            } catch (DocumentException de) {
-//                throw new ExceptionConverter(de);
-//            } catch (IOException ioe) {
-//                throw new ExceptionConverter(ioe);
-//            }
-//        }
-//
-//        @Override
-//        public void onEndPage(PdfWriter writer, Document document) {
-//            PdfPTable table = new PdfPTable(3);
-//            try {
-//                table.setWidths(new int[]{24, 24, 2});
-//                table.getDefaultCell().setFixedHeight(20);
-//                table.getDefaultCell().setBorder(Rectangle.BOTTOM);
-//                table.addCell(new Phrase("Wygenerowano z AWPS", font));
-//                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-//                table.addCell(new Phrase(String.format("Strona %d z", writer.getPageNumber()), font));
-//                PdfPCell cell = new PdfPCell(total);
-//                cell.setBorder(Rectangle.BOTTOM);
-//                table.addCell(cell);
-//                PdfContentByte canvas = writer.getDirectContent();
-//                canvas.beginMarkedContentSequence(PdfName.ARTIFACT);
-//                table.writeSelectedRows(0, -1, 36, 30, canvas);
-//                canvas.endMarkedContentSequence();
-//            } catch (DocumentException de) {
-//                throw new ExceptionConverter(de);
-//            }
-//        }
-//
-//        @Override
-//        public void onCloseDocument(PdfWriter writer, Document document) {
-//            ColumnText.showTextAligned(t, Element.ALIGN_LEFT,
-//                    new Phrase(String.valueOf(writer.getPageNumber()), font),
-//                    2, 4, 0);
-//        }
-//    }
+    static class Header extends PdfPageEventHelper {
+
+        private Phrase header;
+
+        public void setHeader(Phrase header) {
+            this.header = header;
+        }
+
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            PdfPTable table = new PdfPTable(1);
+            table.getDefaultCell().setFixedHeight(20);
+
+            PdfPCell cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setPhrase(header);
+            table.addCell(cell);
+
+            table.setTotalWidth(document.getPageSize().getWidth()
+                    - document.leftMargin() - document.rightMargin());
+            table.writeSelectedRows(0, -1, document.leftMargin(),
+                    800, writer.getDirectContent());
+        }
+    }
 }
