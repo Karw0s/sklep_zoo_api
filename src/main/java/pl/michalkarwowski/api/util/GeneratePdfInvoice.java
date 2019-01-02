@@ -215,7 +215,14 @@ public class GeneratePdfInvoice {
         basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         positionSumUp.addCell(basCell);
 
-        basCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceTax()), normalD));
+        String totalTax;
+        if(invoice.getPriceTax().equals(0d)) {
+            totalTax = "0,00";
+        } else {
+            totalTax = DF.format(invoice.getPriceTax());
+        }
+
+        basCell = new PdfPCell(new Phrase(totalTax, normalD));
         basCell.setMinimumHeight(10f);
         basCell.setBorder(Rectangle.NO_BORDER);
         basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -333,7 +340,6 @@ public class GeneratePdfInvoice {
         Font normalF = FontFactory.getFont(FONT, BaseFont.IDENTITY_H, true, 8f);
         Font normalD = FontFactory.getFont(FONT_BOLD, BaseFont.IDENTITY_H, true, 8f);
         BaseColor cellsBorderColor = new BaseColor(192, 192, 192);
-        DecimalFormat df = new DecimalFormat("#.00");
 
         List<String> headersList = new ArrayList<String>() {{
             add("LP");
@@ -390,17 +396,17 @@ public class GeneratePdfInvoice {
                 positionTable.addCell(positionCell);
             }
 
-            positionCell = new PdfPCell(new Phrase(String.format("%s %s", df.format(position.getQuantity()), position.getUnitOfMeasure()), normalF));
+            positionCell = new PdfPCell(new Phrase(String.format("%s %s", DF.format(position.getQuantity()), position.getUnitOfMeasure()), normalF));
             positionCell.setBorderColor(cellsBorderColor);
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
 
-            positionCell = new PdfPCell(new Phrase(df.format(position.getPriceNetto()), normalF));
+            positionCell = new PdfPCell(new Phrase(DF.format(position.getPriceNetto()), normalF));
             positionCell.setBorderColor(cellsBorderColor);
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
 
-            positionCell = new PdfPCell(new Phrase(df.format(position.getTotalPriceNetto()), normalF));
+            positionCell = new PdfPCell(new Phrase(DF.format(position.getTotalPriceNetto()), normalF));
             positionCell.setBorderColor(cellsBorderColor);
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
@@ -410,12 +416,19 @@ public class GeneratePdfInvoice {
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
 
-            positionCell = new PdfPCell(new Phrase(df.format(position.getTotalPriceTax()), normalF));
+            String totalTax;
+            if(position.getTotalPriceTax().equals(0d)) {
+                totalTax = "0,00";
+            } else {
+                totalTax = DF.format(position.getTotalPriceTax());
+            }
+
+            positionCell = new PdfPCell(new Phrase(totalTax, normalF));
             positionCell.setBorderColor(cellsBorderColor);
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
 
-            positionCell = new PdfPCell(new Phrase(df.format(position.getTotalPriceBrutto()), normalF));
+            positionCell = new PdfPCell(new Phrase(DF.format(position.getTotalPriceBrutto()), normalF));
             positionCell.setBorderColor(cellsBorderColor);
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
@@ -454,7 +467,7 @@ public class GeneratePdfInvoice {
             Map.Entry entry = (Map.Entry) summary.next();
             Summary vatSummary = (Summary) entry.getValue();
 
-            PdfPCell cell = new PdfPCell(new Phrase(df.format(vatSummary.getTotalPriceNet()), normalF));
+            PdfPCell cell = new PdfPCell(new Phrase(DF.format(vatSummary.getTotalPriceNet()), normalF));
             cell.setBorderColor(cellsBorderColor);
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(cell);
@@ -464,12 +477,18 @@ public class GeneratePdfInvoice {
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(cell);
 
-            cell = new PdfPCell(new Phrase(df.format(vatSummary.getTotalPriceTax()), normalF));
+            String totalTax;
+            if(vatSummary.getTotalPriceTax().equals(0d)) {
+                totalTax = "0,00";
+            } else {
+                totalTax = DF.format(vatSummary.getTotalPriceTax());
+            }
+            cell = new PdfPCell(new Phrase(totalTax, normalF));
             cell.setBorderColor(cellsBorderColor);
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(cell);
 
-            cell = new PdfPCell(new Phrase(df.format(vatSummary.getTotalPriceGross()), normalF));
+            cell = new PdfPCell(new Phrase(DF.format(vatSummary.getTotalPriceGross()), normalF));
             cell.setBorderColor(cellsBorderColor);
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(cell);
@@ -496,7 +515,7 @@ public class GeneratePdfInvoice {
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
 
-        summaryCell = new PdfPCell(new Phrase(df.format(invoice.getPriceNet()), normalD));
+        summaryCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceNet()), normalD));
         summaryCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
@@ -506,12 +525,12 @@ public class GeneratePdfInvoice {
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
 
-        summaryCell = new PdfPCell(new Phrase(df.format(invoice.getPriceTax()), normalD));
+        summaryCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceTax()), normalD));
         summaryCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
 
-        summaryCell = new PdfPCell(new Phrase(df.format(invoice.getPriceGross()), normalD));
+        summaryCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceGross()), normalD));
         summaryCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);

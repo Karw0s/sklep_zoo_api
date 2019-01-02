@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.dto.ErrorMessage;
 import pl.michalkarwowski.api.dto.InvoiceListDTO;
+import pl.michalkarwowski.api.dto.invoice.InvoiceCreateResponseDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceNextNumberDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoicePositionDTO;
@@ -55,7 +56,22 @@ public class InvoiceController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(ErrorMessage.builder().errorField("number").message(e.getMessage()).build());
         }
-        return new ResponseEntity<>(newInvoice, HttpStatus.CREATED);
+
+        ModelMapper modelMapper2 = new ModelMapper();
+        TypeMap<Invoice, InvoiceCreateResponseDTO> typeMap = modelMapper2.createTypeMap(Invoice.class, InvoiceCreateResponseDTO.class);
+        typeMap.addMappings(new PropertyMap<Invoice, InvoiceCreateResponseDTO>() {
+            @Override
+            protected void configure() {
+                skip(destination.getPositions());
+            }
+        });
+        InvoiceCreateResponseDTO invoiceCreateResponseDTO = modelMapper2.map(newInvoice, InvoiceCreateResponseDTO.class);
+        invoiceCreateResponseDTO.setPositions(new ArrayList<>());
+        for (InvoicePosition position : newInvoice.getPositions()) {
+            invoiceCreateResponseDTO.getPositions().add(modelMapper2.map(position, InvoicePositionDTO.class));
+        }
+
+        return new ResponseEntity<>(invoiceCreateResponseDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("/invoices/{id}")
@@ -71,8 +87,7 @@ public class InvoiceController {
         });
         InvoiceDTO invoiceDTO = modelMapper2.map(invoice, InvoiceDTO.class);
         invoiceDTO.setPositions(new ArrayList<>());
-        for (InvoicePosition position :
-                invoice.getPositions()) {
+        for (InvoicePosition position : invoice.getPositions()) {
             invoiceDTO.getPositions().add(modelMapper2.map(position, InvoicePositionDTO.class));
         }
         return new ResponseEntity<>(invoiceDTO, HttpStatus.OK);
@@ -91,7 +106,20 @@ public class InvoiceController {
         if (updatedInvoice == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return new ResponseEntity<>(updatedInvoice, HttpStatus.OK);
+        ModelMapper modelMapper2 = new ModelMapper();
+        TypeMap<Invoice, InvoiceDTO> typeMap = modelMapper2.createTypeMap(Invoice.class, InvoiceDTO.class);
+        typeMap.addMappings(new PropertyMap<Invoice, InvoiceDTO>() {
+            @Override
+            protected void configure() {
+                skip(destination.getPositions());
+            }
+        });
+        InvoiceDTO updatedInvoiceDTO = modelMapper2.map(updatedInvoice, InvoiceDTO.class);
+        updatedInvoiceDTO.setPositions(new ArrayList<>());
+        for (InvoicePosition position : updatedInvoice.getPositions()) {
+            updatedInvoiceDTO.getPositions().add(modelMapper2.map(position, InvoicePositionDTO.class));
+        }
+        return new ResponseEntity<>(updatedInvoiceDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/invoices/{id}")

@@ -47,7 +47,7 @@ public class ClientServiceImp implements ClientService {
 
         for(Client client: clients) {
             Address address = client.getAddress();
-            String addressString = String.join(" ", address.getStreet(), address.getZipCode(), address.getCity());
+            String addressString = String.join(" ", address.getStreet() + ",", address.getZipCode(), address.getCity());
             clientsDetailList.add(ClientsDetailDTO.builder()
                     .id(client.getId())
                     .companyName(client.getCompanyName())

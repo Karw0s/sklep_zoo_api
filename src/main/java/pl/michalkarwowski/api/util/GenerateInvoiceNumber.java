@@ -33,7 +33,7 @@ public class GenerateInvoiceNumber {
 
                 numberSplit[0] = Integer.toString(Integer.parseInt(numberSplit[0]) + 1);
                 String nextNumber = String.join("/", numberSplit);
-                nextNumberByIssueDate.setLastInvoiceNumber(nextNumberByIssueDate.getNextInvoiceNumber());
+                nextNumberByIssueDate.setLastInvoiceNumber(String.join("/", numberSplit));
                 nextNumberByIssueDate.setNextInvoiceNumber(nextNumber);
                 nextNumberByIssueDate.setLastUpdate(new Date());
                 return nextNumberByIssueDate;
