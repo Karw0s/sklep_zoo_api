@@ -525,7 +525,13 @@ public class GeneratePdfInvoice {
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
 
-        summaryCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceTax()), normalD));
+        String totalTax;
+        if(invoice.getPriceTax().equals(0d)) {
+            totalTax = "0,00";
+        } else {
+            totalTax = DF.format(invoice.getPriceTax());
+        }
+        summaryCell = new PdfPCell(new Phrase(totalTax, normalD));
         summaryCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
