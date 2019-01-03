@@ -20,7 +20,7 @@ public class Product {
     private Double priceNetto;
     @Column(precision=10, scale=2)
     private Double priceBrutto;
-    private Integer tax;
+    private String tax;
     private String pkwiuCode;
     private String barCode;
 }

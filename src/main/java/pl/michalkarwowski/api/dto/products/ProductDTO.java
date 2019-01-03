@@ -26,7 +26,7 @@ public class ProductDTO {
     @Min(value = 0, message = "Price cannot be negative")
     private Double priceBrutto;
     @NotNull
-    private Integer tax;
+    private String  tax;
     private String pkwiuCode;
     private String barCode;
 }

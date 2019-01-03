@@ -10,7 +10,7 @@ public class ProductDetailsDTO {
     private String manufacturer;
     private Double priceNetto;
     private Double priceBrutto;
-    private Integer tax;
+    private String tax;
     private String unitOfMeasure;
     private String pkwiuCode;
 }

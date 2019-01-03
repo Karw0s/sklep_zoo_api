@@ -13,6 +13,6 @@ public class ProductCreateResponseDTO {
     private Double amount;
     private Double priceNetto;
     private Double priceBrutto;
-    private Integer tax;
+    private String tax;
     private String pkiwCode;
 }
