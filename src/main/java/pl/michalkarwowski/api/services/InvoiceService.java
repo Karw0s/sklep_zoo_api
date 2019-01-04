@@ -1,6 +1,6 @@
 package pl.michalkarwowski.api.services;
 
-import pl.michalkarwowski.api.dto.InvoiceListDTO;
+import pl.michalkarwowski.api.dto.invoice.InvoiceListDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceDTO;
 import pl.michalkarwowski.api.exceptions.InvoiceExistsException;
 import pl.michalkarwowski.api.models.Invoice;

@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.dto.ErrorMessage;
-import pl.michalkarwowski.api.dto.InvoiceListDTO;
+import pl.michalkarwowski.api.dto.invoice.InvoiceListDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceCreateResponseDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceNextNumberDTO;
