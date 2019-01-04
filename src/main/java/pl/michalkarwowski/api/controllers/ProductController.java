@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import pl.michalkarwowski.api.dto.ErrorMessage;
 import pl.michalkarwowski.api.dto.products.ProductCreateResponseDTO;
 import pl.michalkarwowski.api.dto.products.ProductDTO;
 import pl.michalkarwowski.api.dto.products.ProductDetailsDTO;
@@ -14,6 +16,7 @@ import pl.michalkarwowski.api.services.ProductService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,25 +66,32 @@ public class ProductController {
         if (product2 == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-//        SingleProductDto result = SingleProductDto.builder()
-//                .result(product2)
-//                .error(null)
-//                .build();
         return new ResponseEntity<>(modelMapper.map(product2, ProductDTO.class), HttpStatus.OK);
     }
 
     @DeleteMapping("/products/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable String id) {
-        boolean result = productService.deleteProduct(Integer.parseInt(id));
-        return new ResponseEntity<>("{\"Deleted\": " + result + "}", HttpStatus.OK);
+    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+        if(productService.deleteProduct(Integer.parseInt(id))) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-
-    @PostMapping("/products/addlist")
-    public ResponseEntity<List<Product>> addProductList(@RequestBody List<ProductDTO> productList) {
-        Type listType = new TypeToken<List<Product>>() {}.getType();
-        List<Product> products = modelMapper.map(productList, listType);
-        products = productService.addProductList(products);
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    @PostMapping("/products/csv")
+    public ResponseEntity<Object> addProductListFromCSV(@RequestParam("file") MultipartFile file) {
+        List<Product> products = null;
+        try {
+            products = productService.addProductListFromCSV(file);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                    .body(ErrorMessage.builder()
+                            .errorField("File Parsing")
+                            .message(e.getMessage())
+                            .build());
+        }
+        Type listType = new TypeToken<List<ProductDTO>>() {}.getType();
+        List<ProductDTO> productsDTO = modelMapper.map(products, listType);
+        return new ResponseEntity<>(productsDTO, HttpStatus.OK);
     }
 }

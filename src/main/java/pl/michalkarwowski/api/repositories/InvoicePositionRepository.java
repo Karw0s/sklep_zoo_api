@@ -6,5 +6,5 @@ import pl.michalkarwowski.api.models.InvoicePosition;
 import java.util.List;
 
 public interface InvoicePositionRepository extends CrudRepository<InvoicePosition, Long> {
-    List<InvoicePosition> findAllByProductId(Long id);
+    List<InvoicePosition> findAllByProductId(Integer id);
 }
