@@ -122,6 +122,22 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
     }
 
     @Override
+    public boolean verifyUser(String token) {
+        VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if (verificationToken != null) {
+            ApplicationUser user = verificationToken.getUser();
+
+            if (user != null) {
+                user.setVerified(true);
+                applicationUserRepository.save(user);
+                tokenRepository.delete(getVerificationToken(token));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void createVerificationToken(ApplicationUser user, String token) {
         VerificationToken myToken = new VerificationToken();
         myToken.setUser(user);
@@ -129,10 +145,6 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
         tokenRepository.save(myToken);
     }
 
-    @Override
-    public ApplicationUser getUser(String verificationToken) {
-        return tokenRepository.findByToken(verificationToken).getUser();
-    }
 
     @Override
     public VerificationToken getVerificationToken(String VerificationToken) {

@@ -17,6 +17,7 @@ import pl.michalkarwowski.api.jwt.JWTAuthorizationFilter;
 import pl.michalkarwowski.api.services.UserDetailsServiceImpl;
 
 import static pl.michalkarwowski.api.security.config.SecurityConstants.SIGN_UP_URL;
+import static pl.michalkarwowski.api.security.config.SecurityConstants.VERIFY_URL;
 
 @Configuration
 @EnableWebSecurity
@@ -34,6 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                .antMatchers(HttpMethod.GET, VERIFY_URL).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))

@@ -33,8 +33,8 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message);
             helper.setFrom("projekt.awps@gmail.com");
             helper.setTo(user.getEmail());
-            helper.setSubject("Verify Email");
-            helper.setText("Zweryfikuj Swój adres email: " + "rn" + "http://localhost:4200/verify?token=" + token);
+            helper.setSubject("Verify Email AWPS");
+            helper.setText("Zweryfikuj ten adres email za pomocą tego linku " + "http://localhost:4200/verify?token=" + token);
             emailSender.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();

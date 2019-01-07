@@ -14,7 +14,7 @@ public interface ApplicationUserService {
     ApplicationUser registerAppUser(AppUserRegistrationDTO userRegistrationDTO) throws EmailExistsException;
     AppUserDetails getUserDetails();
     AppUserDetails updateUserDetails(AppUserDetailsDTO appUserDetails);
+    boolean verifyUser(String token);
     void createVerificationToken(ApplicationUser user, String token);
-    ApplicationUser getUser(String verificationToken);
     VerificationToken getVerificationToken(String VerificationToken);
 }
