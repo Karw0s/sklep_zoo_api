@@ -11,24 +11,29 @@ import pl.michalkarwowski.api.exceptions.EmailExistsException;
 import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.AppUserDetails;
 import pl.michalkarwowski.api.models.ApplicationUser;
+import pl.michalkarwowski.api.models.VerificationToken;
 import pl.michalkarwowski.api.repositories.AppUserDetailsRepository;
 import pl.michalkarwowski.api.repositories.ApplicationUserRepository;
+import pl.michalkarwowski.api.repositories.VerificationTokenRepository;
 
 @Service
 public class ApplicationUserServiceImp implements ApplicationUserService {
 
     private final ApplicationUserRepository applicationUserRepository;
     private final AppUserDetailsRepository appUserDetailsRepository;
+    private VerificationTokenRepository tokenRepository;
     private AddressService addressService;
     private ModelMapper modelMapper;
 
     @Autowired
     public ApplicationUserServiceImp(ApplicationUserRepository applicationUserRepository,
                                      AppUserDetailsRepository appUserDetailsRepository,
+                                     VerificationTokenRepository tokenRepository,
                                      AddressService addressService,
                                      ModelMapper modelMapper) {
         this.applicationUserRepository = applicationUserRepository;
         this.appUserDetailsRepository = appUserDetailsRepository;
+        this.tokenRepository = tokenRepository;
         this.addressService = addressService;
         this.modelMapper = modelMapper;
     }
@@ -114,5 +119,23 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
             return appUserDetailsDB;
         }
         return null;
+    }
+
+    @Override
+    public void createVerificationToken(ApplicationUser user, String token) {
+        VerificationToken myToken = new VerificationToken();
+        myToken.setUser(user);
+        myToken.setToken(token);
+        tokenRepository.save(myToken);
+    }
+
+    @Override
+    public ApplicationUser getUser(String verificationToken) {
+        return tokenRepository.findByToken(verificationToken).getUser();
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
     }
 }
