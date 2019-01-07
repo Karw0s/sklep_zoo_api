@@ -11,6 +11,7 @@ import pl.michalkarwowski.api.dto.ErrorMessage;
 import pl.michalkarwowski.api.dto.products.ProductCreateResponseDTO;
 import pl.michalkarwowski.api.dto.products.ProductDTO;
 import pl.michalkarwowski.api.dto.products.ProductDetailsDTO;
+import pl.michalkarwowski.api.exceptions.InvalidCSVException;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.ProductService;
 
@@ -83,7 +84,7 @@ public class ProductController {
         List<Product> products = null;
         try {
             products = productService.addProductListFromCSV(file);
-        } catch (IOException e) {
+        } catch (IOException | InvalidCSVException e) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
                     .body(ErrorMessage.builder()
                             .errorField("File Parsing")

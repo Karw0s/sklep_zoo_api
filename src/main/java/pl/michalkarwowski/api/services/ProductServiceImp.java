@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.michalkarwowski.api.dto.products.ProductDTO;
+import pl.michalkarwowski.api.exceptions.InvalidCSVException;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.repositories.InvoicePositionRepository;
@@ -68,7 +69,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public List<Product> addProductListFromCSV(MultipartFile file) throws IOException {
+    public List<Product> addProductListFromCSV(MultipartFile file) throws IOException, InvalidCSVException {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
         InputStream in = new DataInputStream(file.getInputStream());
         Reader reader = new InputStreamReader(in);
@@ -83,19 +84,23 @@ public class ProductServiceImp implements ProductService {
         List<ProductDTO> productsDTO = new ArrayList<>();
         List<String[]> allData = csvReader.readAll();
 
-        for (String[] row : allData) {
-            ProductDTO productDTO = new ProductDTO();
-            productDTO.setCatalogNumber(row[0]);
-            productDTO.setName(row[1]);
-            productDTO.setManufacturer(row[2]);
-            productDTO.setUnitOfMeasure(row[3]);
-            productDTO.setAmount(Double.parseDouble(row[4]));
-            productDTO.setPriceNetto(Double.parseDouble(row[5].replace(",", ".")));
-            productDTO.setPriceBrutto(Double.parseDouble(row[6].replace(",", ".")));
-            productDTO.setTax(row[7]);
-            productDTO.setPkwiuCode(row[8]);
-            productDTO.setBarCode(row[9]);
-            productsDTO.add(productDTO);
+        try {
+            for (String[] row : allData) {
+                ProductDTO productDTO = new ProductDTO();
+                productDTO.setCatalogNumber(row[0]);
+                productDTO.setName(row[1]);
+                productDTO.setManufacturer(row[2]);
+                productDTO.setUnitOfMeasure(row[3]);
+                productDTO.setAmount(Double.parseDouble(row[4]));
+                productDTO.setPriceNetto(Double.parseDouble(row[5].replace(",", ".")));
+                productDTO.setPriceBrutto(Double.parseDouble(row[6].replace(",", ".")));
+                productDTO.setTax(row[7]);
+                productDTO.setPkwiuCode(row[8]);
+                productDTO.setBarCode(row[9]);
+                productsDTO.add(productDTO);
+            }
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new InvalidCSVException();
         }
 
         Type listType = new TypeToken<List<Product>>() {}.getType();
