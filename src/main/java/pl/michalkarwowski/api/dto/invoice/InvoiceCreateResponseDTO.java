@@ -1,7 +1,7 @@
 package pl.michalkarwowski.api.dto.invoice;
 
 import lombok.Data;
-import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
+import pl.michalkarwowski.api.dto.users.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.clients.BuyerDTO;
 
 import java.util.Date;

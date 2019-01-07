@@ -2,16 +2,12 @@ package pl.michalkarwowski.api.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.application.Application;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
-import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
+import pl.michalkarwowski.api.dto.users.AppUserRegistrationDTO;
 import pl.michalkarwowski.api.dto.ErrorMessage;
 import pl.michalkarwowski.api.exceptions.EmailExistsException;
 import pl.michalkarwowski.api.models.ApplicationUser;

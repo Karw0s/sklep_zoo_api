@@ -1,4 +1,4 @@
-package pl.michalkarwowski.api.dto;
+package pl.michalkarwowski.api.dto.users;
 
 import lombok.Data;
 

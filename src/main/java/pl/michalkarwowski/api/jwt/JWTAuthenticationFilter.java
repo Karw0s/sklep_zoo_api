@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import pl.michalkarwowski.api.dto.users.AuthenticationDto;
 import pl.michalkarwowski.api.models.ApplicationUser;
 
 import javax.servlet.FilterChain;
@@ -64,7 +65,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         res.addHeader("Content-Type", "application/json");
 
-        AuthenticationDto authenticationDto = new AuthenticationDto.AuthenticationDtoBuilder()
+        AuthenticationDto authenticationDto = AuthenticationDto.builder()
                 .exp(Long.toString(exp))
                 .token(token)
                 .username(username)

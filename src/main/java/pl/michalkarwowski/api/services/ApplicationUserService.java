@@ -1,7 +1,7 @@
 package pl.michalkarwowski.api.services;
 
-import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
-import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
+import pl.michalkarwowski.api.dto.users.AppUserDetailsDTO;
+import pl.michalkarwowski.api.dto.users.AppUserRegistrationDTO;
 import pl.michalkarwowski.api.exceptions.EmailExistsException;
 import pl.michalkarwowski.api.models.AppUserDetails;
 import pl.michalkarwowski.api.models.ApplicationUser;

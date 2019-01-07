@@ -1,7 +1,8 @@
-package pl.michalkarwowski.api.dto;
+package pl.michalkarwowski.api.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import pl.michalkarwowski.api.dto.AddressDTO;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

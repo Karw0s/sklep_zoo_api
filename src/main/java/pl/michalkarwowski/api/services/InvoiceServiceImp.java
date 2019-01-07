@@ -5,7 +5,7 @@ import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
+import pl.michalkarwowski.api.dto.users.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.invoice.InvoiceListDTO;
 import pl.michalkarwowski.api.dto.clients.BuyerDTO;
 import pl.michalkarwowski.api.dto.clients.ClientDTO;
