@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
+import pl.michalkarwowski.api.dto.ErrorMessage;
+import pl.michalkarwowski.api.exceptions.EmailExistsException;
 import pl.michalkarwowski.api.models.ApplicationUser;
 import pl.michalkarwowski.api.services.ApplicationUserService;
 
@@ -31,7 +33,15 @@ public class UserController {
         ApplicationUser user2 = applicationUserService.findByUsername(user.getUsername());
         if (user2 == null) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            applicationUserService.registerAppUser(user);
+            try {
+                applicationUserService.registerAppUser(user);
+            } catch (EmailExistsException e) {
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                        .body(ErrorMessage.builder()
+                                .message(e.getMessage())
+                                .errorField("Email")
+                                .build());
+            }
             return new ResponseEntity<>(new ObjectMapper().writeValueAsString("User registered successfully"), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(new ObjectMapper().writeValueAsString("Użytkownik istnieje"), HttpStatus.EXPECTATION_FAILED);

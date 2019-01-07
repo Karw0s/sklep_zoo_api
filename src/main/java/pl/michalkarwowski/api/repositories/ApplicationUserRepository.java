@@ -5,4 +5,5 @@ import pl.michalkarwowski.api.models.ApplicationUser;
 
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
     ApplicationUser findByUsername(String username);
+    ApplicationUser findByEmail(String email);
 }

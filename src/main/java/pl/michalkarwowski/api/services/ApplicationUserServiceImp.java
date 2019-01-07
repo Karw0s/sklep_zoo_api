@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import pl.michalkarwowski.api.dto.AddressDTO;
 import pl.michalkarwowski.api.dto.AppUserDetailsDTO;
 import pl.michalkarwowski.api.dto.AppUserRegistrationDTO;
+import pl.michalkarwowski.api.exceptions.EmailExistsException;
 import pl.michalkarwowski.api.models.Address;
 import pl.michalkarwowski.api.models.AppUserDetails;
 import pl.michalkarwowski.api.models.ApplicationUser;
@@ -49,7 +50,14 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
     }
 
     @Override
-    public ApplicationUser registerAppUser(AppUserRegistrationDTO userRegistrationDTO) {
+    public ApplicationUser registerAppUser(AppUserRegistrationDTO userRegistrationDTO) throws EmailExistsException {
+
+        if (emailExist(userRegistrationDTO.getEmail())) {
+            throw new EmailExistsException(
+                    "There is an account with that email adress: "
+                            + userRegistrationDTO.getEmail());
+        }
+
         ApplicationUser applicationUser = new ApplicationUser();
         AppUserDetails userDetails = new AppUserDetails();
 
@@ -60,6 +68,14 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
         appUserDetailsRepository.save(userDetails);
         applicationUser.setUserDetails(userDetails);
         return applicationUserRepository.save(applicationUser);
+    }
+
+    private boolean emailExist(String email) {
+        ApplicationUser user = applicationUserRepository.findByEmail(email);
+        if (user != null) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -75,7 +91,7 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
 
         Address address = modelMapper.map(appUserDetailsDTO.getAddress(), Address.class);
         Address addressDB = null;
-        if(applicationUser.getUserDetails().getAddress() == null) {
+        if (applicationUser.getUserDetails().getAddress() == null) {
             addressDB = addressService.createAddress(modelMapper.map(address, AddressDTO.class));
         } else {
             address.setId(applicationUser.getUserDetails().getAddress().getId());
