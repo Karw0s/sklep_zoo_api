@@ -16,5 +16,4 @@ public interface ApplicationUserService {
     AppUserDetails updateUserDetails(AppUserDetailsDTO appUserDetails);
     boolean verifyUser(String token);
     void createVerificationToken(ApplicationUser user, String token);
-    VerificationToken getVerificationToken(String VerificationToken);
 }

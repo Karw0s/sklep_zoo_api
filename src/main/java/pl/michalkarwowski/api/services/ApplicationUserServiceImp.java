@@ -145,9 +145,7 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
         tokenRepository.save(myToken);
     }
 
-
-    @Override
-    public VerificationToken getVerificationToken(String VerificationToken) {
+    private VerificationToken getVerificationToken(String VerificationToken) {
         return tokenRepository.findByToken(VerificationToken);
     }
 }

@@ -39,6 +39,7 @@ public class AccountController {
                 .verified(user.isVerified())
                 .build(), HttpStatus.OK);
     }
+
     @PutMapping("/account/details")
     public ResponseEntity<AppUserDetailsDTO> updateAccountDetails(@Valid @RequestBody AppUserDetailsDTO appUserDetails) {
         AppUserDetails userDetails = applicationUserService.updateUserDetails(appUserDetails);
