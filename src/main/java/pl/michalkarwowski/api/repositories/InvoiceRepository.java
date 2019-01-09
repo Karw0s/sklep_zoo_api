@@ -9,9 +9,5 @@ import java.util.Optional;
 
 public interface InvoiceRepository extends CrudRepository<Invoice, Long> {
     Invoice getById(Long id);
-    Invoice getByNumber (String number);
-    Optional<Invoice> findByNumber (String number);
     List<Invoice> findAllByBuyerId(Integer id);
-    List<Invoice> findAllByIssueDateBetween(Date dateFrom, Date dateTo);
-
 }

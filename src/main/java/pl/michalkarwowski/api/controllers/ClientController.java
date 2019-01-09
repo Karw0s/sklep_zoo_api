@@ -30,10 +30,6 @@ public class ClientController {
     @GetMapping("/clients")
     public ResponseEntity<List<ClientsDetailDTO>> getUserClients() {
         List<ClientsDetailDTO> clientsDetailDTOList = clientService.getUserClients();
-//        List<ClientsDetailDTO> clientsDetailDTOList = new ArrayList<>();
-//        for (Client client: clients) {
-//            clientsDetailDTOList.add(modelMapper.map(client, ClientsDetailDTO.class));
-//        }
         return new ResponseEntity<>(clientsDetailDTOList, HttpStatus.OK);
     }
 
