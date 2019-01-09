@@ -1,11 +1,15 @@
 package pl.michalkarwowski.api.util;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.*;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.models.InvoicePosition;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,7 +26,7 @@ public class GeneratePdfInvoice {
     private static final String FONT_ITALIC = "static/fonts/FreeSansOblique.ttf";
     private static final String ORIGINAL = "Oryginał";
     private static final String COPY = "Kopia";
-    private static final DecimalFormat DF = new DecimalFormat("#.00");
+    private static final DecimalFormat DF = new DecimalFormat("#0.00");
     private static String currency = "PLN";
 
     public static ByteArrayInputStream pdfInvoice(Invoice invoice, boolean originalPlusCopy) {
@@ -75,7 +79,7 @@ public class GeneratePdfInvoice {
                 hcell.setBorder(Rectangle.NO_BORDER);
                 headerTable.addCell(hcell);
 
-                hcell = new PdfPCell(new Phrase("Data sprzedaży", headerFont));
+                hcell = new PdfPCell(new Phrase("Data sprzedaży*", headerFont));
                 hcell.setBorder(Rectangle.NO_BORDER);
                 headerTable.addCell(hcell);
 
@@ -215,14 +219,7 @@ public class GeneratePdfInvoice {
         basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         positionSumUp.addCell(basCell);
 
-        String totalTax;
-        if(invoice.getPriceTax().equals(0d)) {
-            totalTax = "0,00";
-        } else {
-            totalTax = DF.format(invoice.getPriceTax());
-        }
-
-        basCell = new PdfPCell(new Phrase(totalTax, normalD));
+        basCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceTax()), normalD));
         basCell.setMinimumHeight(10f);
         basCell.setBorder(Rectangle.NO_BORDER);
         basCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -416,14 +413,7 @@ public class GeneratePdfInvoice {
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
 
-            String totalTax;
-            if(position.getTotalPriceTax().equals(0d)) {
-                totalTax = "0,00";
-            } else {
-                totalTax = DF.format(position.getTotalPriceTax());
-            }
-
-            positionCell = new PdfPCell(new Phrase(totalTax, normalF));
+            positionCell = new PdfPCell(new Phrase(DF.format(position.getTotalPriceTax()), normalF));
             positionCell.setBorderColor(cellsBorderColor);
             positionCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(positionCell);
@@ -477,13 +467,7 @@ public class GeneratePdfInvoice {
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(cell);
 
-            String totalTax;
-            if(vatSummary.getTotalPriceTax().equals(0d)) {
-                totalTax = "0,00";
-            } else {
-                totalTax = DF.format(vatSummary.getTotalPriceTax());
-            }
-            cell = new PdfPCell(new Phrase(totalTax, normalF));
+            cell = new PdfPCell(new Phrase(DF.format(vatSummary.getTotalPriceTax()), normalF));
             cell.setBorderColor(cellsBorderColor);
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             positionTable.addCell(cell);
@@ -525,13 +509,7 @@ public class GeneratePdfInvoice {
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
 
-        String totalTax;
-        if(invoice.getPriceTax().equals(0d)) {
-            totalTax = "0,00";
-        } else {
-            totalTax = DF.format(invoice.getPriceTax());
-        }
-        summaryCell = new PdfPCell(new Phrase(totalTax, normalD));
+        summaryCell = new PdfPCell(new Phrase(DF.format(invoice.getPriceTax()), normalD));
         summaryCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         summaryCell.setBorderColor(cellsBorderColor);
         positionTable.addCell(summaryCell);
@@ -553,7 +531,8 @@ public class GeneratePdfInvoice {
         public PageNumeration() {
             try {
                 this.normal = new Font(BaseFont.createFont(FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 8);
-                this.normalSmall = new Font(BaseFont.createFont(FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 6);
+                this.normalSmall = new Font(BaseFont.createFont(FONT, BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 7);
+                this.normalSmall.setColor(BaseColor.GRAY);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -587,6 +566,18 @@ public class GeneratePdfInvoice {
                 cell.setBorder(0);
                 cell.setBorderWidthTop(1);
                 table.addCell(cell);
+
+                cell = new PdfPCell();
+                cell.setBorder(0);
+                cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                cell.setPhrase(new Phrase("* Data rozumiana jako data dokonania/zakończenia dostawy towarów lub wykonania usługi", normalSmall));
+                table.addCell(cell);
+
+                cell = new PdfPCell();
+                cell.setBorder(0);
+                table.addCell(cell);
+                table.addCell(cell);
+
                 table.setTotalWidth(document.getPageSize().getWidth()
                         - document.leftMargin() - document.rightMargin());
                 table.writeSelectedRows(0, -1, document.leftMargin(),
