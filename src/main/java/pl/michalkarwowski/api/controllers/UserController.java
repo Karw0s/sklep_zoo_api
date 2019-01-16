@@ -42,16 +42,18 @@ public class UserController {
             try {
                 appUser = applicationUserService.registerAppUser(userDto);
             } catch (EmailExistsException e) {
-                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(ErrorMessage.builder()
                                 .message(e.getMessage())
                                 .errorField("Email")
                                 .build());
             }
             emailService.sendVerificationEmail(appUser);
+
+            // errorMessage
             return new ResponseEntity<>(new ObjectMapper().writeValueAsString("User registered successfully"), HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(new ObjectMapper().writeValueAsString("Użytkownik istnieje"), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(new ObjectMapper().writeValueAsString("Użytkownik istnieje"), HttpStatus.CONFLICT);
         }
     }
 }

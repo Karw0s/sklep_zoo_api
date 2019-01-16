@@ -17,7 +17,7 @@ import pl.michalkarwowski.api.repositories.ApplicationUserRepository;
 import pl.michalkarwowski.api.repositories.VerificationTokenRepository;
 
 @Service
-public class ApplicationUserServiceImp implements ApplicationUserService {
+public class ApplicationUserServiceImpl implements ApplicationUserService {
 
     private final ApplicationUserRepository applicationUserRepository;
     private final AppUserDetailsRepository appUserDetailsRepository;
@@ -26,11 +26,11 @@ public class ApplicationUserServiceImp implements ApplicationUserService {
     private ModelMapper modelMapper;
 
     @Autowired
-    public ApplicationUserServiceImp(ApplicationUserRepository applicationUserRepository,
-                                     AppUserDetailsRepository appUserDetailsRepository,
-                                     VerificationTokenRepository tokenRepository,
-                                     AddressService addressService,
-                                     ModelMapper modelMapper) {
+    public ApplicationUserServiceImpl(ApplicationUserRepository applicationUserRepository,
+                                      AppUserDetailsRepository appUserDetailsRepository,
+                                      VerificationTokenRepository tokenRepository,
+                                      AddressService addressService,
+                                      ModelMapper modelMapper) {
         this.applicationUserRepository = applicationUserRepository;
         this.appUserDetailsRepository = appUserDetailsRepository;
         this.tokenRepository = tokenRepository;

@@ -10,25 +10,21 @@ import pl.michalkarwowski.api.repositories.AddressRepository;
 import java.util.Optional;
 
 @Service
-public class AddressServiceImp implements AddressService {
+public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
     private ModelMapper modelMapper;
 
     @Autowired
-    public AddressServiceImp(AddressRepository addressRepository,
-                             ModelMapper modelMapper) {
+    public AddressServiceImpl(AddressRepository addressRepository,
+                              ModelMapper modelMapper) {
         this.addressRepository = addressRepository;
         this.modelMapper = modelMapper;
     }
 
     @Override
     public Address getAddress(Long id) {
-        Optional<Address> addressDB = addressRepository.findById(id);
-        if (addressDB.isPresent()) {
-            return  addressDB.get();
-        }
-        return null;
+        return addressRepository.findById(id).orElse(null);
     }
 
     @Override

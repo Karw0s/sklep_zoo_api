@@ -19,7 +19,7 @@ import pl.michalkarwowski.api.util.GenerateInvoiceNumber;
 import java.util.*;
 
 @Service
-public class InvoiceServiceImp implements InvoiceService {
+public class InvoiceServiceImpl implements InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private InvoiceNextNumberRepository invoiceNumberRepository;
@@ -35,17 +35,17 @@ public class InvoiceServiceImp implements InvoiceService {
 
 
     @Autowired
-    public InvoiceServiceImp(InvoiceRepository invoiceRepository,
-                             InvoicePositionRepository invoicePosRepository,
-                             InvoiceNextNumberRepository invoiceNumberRepository,
-                             AppUserDetailsRepository appUserDetailsRepository,
-                             ClientRepository clientRepository,
-                             ApplicationUserService applicationUserService,
-                             ProductRepository productRepository,
-                             AddressService addressService,
-                             ClientService clientService,
-                             ProductService productService,
-                             ModelMapper modelMapper) {
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository,
+                              InvoicePositionRepository invoicePosRepository,
+                              InvoiceNextNumberRepository invoiceNumberRepository,
+                              AppUserDetailsRepository appUserDetailsRepository,
+                              ClientRepository clientRepository,
+                              ApplicationUserService applicationUserService,
+                              ProductRepository productRepository,
+                              AddressService addressService,
+                              ClientService clientService,
+                              ProductService productService,
+                              ModelMapper modelMapper) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceNumberRepository = invoiceNumberRepository;
         this.applicationUserService = applicationUserService;
@@ -272,31 +272,32 @@ public class InvoiceServiceImp implements InvoiceService {
     @Override
     public boolean deleteInvoice(Long id) {
         ApplicationUser applicationUser = applicationUserService.getCurrentUser();
-        Invoice invoice = invoiceRepository.getById(id);
-        if (applicationUser.getInvoices().contains(invoice)) {
-            for (InvoicePosition position : invoice.getPositions()) {
-                if (position.getProduct() != null) {
-                    if (!applicationUser.getProducts().contains(position.getProduct())) {
-                        productRepository.deleteById(position.getProduct().getId());
+        Invoice invoice = invoiceRepository.findById(id).orElse(null);
+        if (invoice != null)
+            if (applicationUser.getInvoices().contains(invoice)) {
+                for (InvoicePosition position : invoice.getPositions()) {
+                    if (position.getProduct() != null) {
+                        if (!applicationUser.getProducts().contains(position.getProduct())) {
+                            productRepository.deleteById(position.getProduct().getId());
+                        }
                     }
+                    invoicePosRepository.deleteById(position.getId());
                 }
-                invoicePosRepository.deleteById(position.getId());
-            }
-            invoice.getPositions().removeAll(invoice.getPositions());
+                invoice.getPositions().removeAll(invoice.getPositions());
 
-            if (!applicationUser.getClients().contains(invoice.getBuyer())) {
-                Integer id1 = invoice.getBuyer().getId();
-                clientRepository.deleteById(id1);
-            }
+                if (!applicationUser.getClients().contains(invoice.getBuyer())) {
+                    Integer id1 = invoice.getBuyer().getId();
+                    clientRepository.deleteById(id1);
+                }
 
-            appUserDetailsRepository.deleteById(invoice.getSeller().getId());
+                appUserDetailsRepository.deleteById(invoice.getSeller().getId());
 
-            if (applicationUser.getInvoices().remove(invoice)) {
-                applicationUserService.saveAppUser(applicationUser);
-                invoiceRepository.deleteById(id);
-                return true;
+                if (applicationUser.getInvoices().remove(invoice)) {
+                    applicationUserService.saveAppUser(applicationUser);
+                    invoiceRepository.deleteById(id);
+                    return true;
+                }
             }
-        }
         return false;
     }
 

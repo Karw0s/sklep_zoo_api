@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>api</name>
-    <description>Demo project for Spring Boot</description>
+    <description>AWPS Aplikacja wspomagajaca prowadzenie sklepu</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

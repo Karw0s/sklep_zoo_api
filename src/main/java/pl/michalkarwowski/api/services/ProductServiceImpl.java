@@ -23,17 +23,17 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-public class ProductServiceImp implements ProductService {
+public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private InvoicePositionRepository invoicePositionRepository;
     private final ApplicationUserService applicationUserService;
     private ModelMapper modelMapper;
 
     @Autowired
-    public ProductServiceImp(ProductRepository productRepository,
-                             InvoicePositionRepository invoicePositionRepository,
-                             ApplicationUserService applicationUserService,
-                             ModelMapper modelMapper) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                              InvoicePositionRepository invoicePositionRepository,
+                              ApplicationUserService applicationUserService,
+                              ModelMapper modelMapper) {
         this.productRepository = productRepository;
         this.invoicePositionRepository = invoicePositionRepository;
         this.applicationUserService = applicationUserService;

@@ -85,7 +85,7 @@ public class ProductController {
         try {
             products = productService.addProductListFromCSV(file);
         } catch (IOException | InvalidCSVException e) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ErrorMessage.builder()
                             .errorField("File Parsing")
                             .message(e.getMessage())

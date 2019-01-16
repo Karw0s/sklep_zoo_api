@@ -13,6 +13,9 @@ import java.util.UUID;
 @Service
 public class EmailServiceImpl implements EmailService {
 
+    private final String BASE_URL = "http://localhost:4200";
+    private String mailForm = "projekt.awps@gmail.com";
+
     private JavaMailSender emailSender;
     private ApplicationUserService userService;
 
@@ -31,10 +34,10 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom("projekt.awps@gmail.com");
+            helper.setFrom(mailForm);
             helper.setTo(user.getEmail());
             helper.setSubject("Verify Email AWPS");
-            helper.setText("Zweryfikuj ten adres email za pomocą tego linku " + "http://localhost:4200/verify?token=" + token);
+            helper.setText("Zweryfikuj ten adres email za pomocą tego linku " + BASE_URL + "/verify?token=" + token);
             emailSender.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();

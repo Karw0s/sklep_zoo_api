@@ -159,7 +159,7 @@ public class InvoiceController {
         try {
             issueDateInvoice = DateFormat.getDateInstance().parse(issueDate);
         } catch (ParseException e) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ErrorMessage.builder().errorField("RequestParam").message("Canot Parse RequestParam").build());
         }
         return new ResponseEntity<>(InvoiceNextNumberDTO.builder().number(invoiceService.nextInvoiceNumber(issueDateInvoice)).build(), HttpStatus.OK);

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ClientServiceImp implements ClientService {
+public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private InvoiceRepository invoiceRepository;
@@ -28,11 +28,11 @@ public class ClientServiceImp implements ClientService {
     private ModelMapper modelMapper;
 
     @Autowired
-    public ClientServiceImp(ClientRepository clientRepository,
-                            InvoiceRepository invoiceRepository,
-                            ApplicationUserService applicationUserService,
-                            AddressService addressService,
-                            ModelMapper modelMapper) {
+    public ClientServiceImpl(ClientRepository clientRepository,
+                             InvoiceRepository invoiceRepository,
+                             ApplicationUserService applicationUserService,
+                             AddressService addressService,
+                             ModelMapper modelMapper) {
         this.clientRepository = clientRepository;
         this.invoiceRepository = invoiceRepository;
         this.applicationUserService = applicationUserService;

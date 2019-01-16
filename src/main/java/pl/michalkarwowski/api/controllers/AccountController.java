@@ -54,6 +54,6 @@ public class AccountController {
         if (applicationUserService.verifyUser(token)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

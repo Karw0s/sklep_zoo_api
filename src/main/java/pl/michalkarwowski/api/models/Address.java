@@ -1,7 +1,6 @@
 package pl.michalkarwowski.api.models;
 
 import lombok.Data;
-import pl.michalkarwowski.api.dto.AddressDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +12,7 @@ public class Address {
 
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
     private String street;
     private String zipCode;
     private String city;

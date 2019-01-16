@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 public class Invoice {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private String number;
@@ -34,8 +34,5 @@ public class Invoice {
     private Date created;
     private Date lastUpdated;
     private boolean showPKWIUCode;
-
-
-
 
 }

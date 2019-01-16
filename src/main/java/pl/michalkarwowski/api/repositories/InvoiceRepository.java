@@ -8,6 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InvoiceRepository extends CrudRepository<Invoice, Long> {
-    Invoice getById(Long id);
     List<Invoice> findAllByBuyerId(Integer id);
 }
