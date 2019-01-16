@@ -36,7 +36,7 @@ public class GeneratePdfInvoice {
 
         for (int i = 0; i < (originalPlusCopy ? 2 : 1); i++) {
             try {
-                Document document = new Document(PageSize.A4, 36f,36f,60f,60f);
+                Document document = new Document(PageSize.A4, 36f, 36f, 60f, 60f);
                 PdfWriter pdfWriter = PdfWriter.getInstance(document, out);
 
                 Header header;
@@ -276,31 +276,32 @@ public class GeneratePdfInvoice {
         detailsCell.setBorder(Rectangle.NO_BORDER);
         detailsTable.addCell(detailsCell);
 
-        if (!invoice.getSeller().getBank().isEmpty() && !invoice.getSeller().getBankAccountNumber().isEmpty()) {
-            detailsCell = new PdfPCell(new Phrase("Bank", bold));
-            detailsCell.setBorder(Rectangle.NO_BORDER);
-            detailsTable.addCell(detailsCell);
+        if (invoice.getSeller().getBank() != null && invoice.getSeller().getBankAccountNumber() != null)
+            if (!invoice.getSeller().getBank().isEmpty() && !invoice.getSeller().getBankAccountNumber().isEmpty()) {
+                detailsCell = new PdfPCell(new Phrase("Bank", bold));
+                detailsCell.setBorder(Rectangle.NO_BORDER);
+                detailsTable.addCell(detailsCell);
 
-            detailsCell = new PdfPCell(new Phrase(invoice.getSeller().getBank(), normal));
-            detailsCell.setBorder(Rectangle.NO_BORDER);
-            detailsTable.addCell(detailsCell);
+                detailsCell = new PdfPCell(new Phrase(invoice.getSeller().getBank(), normal));
+                detailsCell.setBorder(Rectangle.NO_BORDER);
+                detailsTable.addCell(detailsCell);
 
-            detailsCell = new PdfPCell();
-            detailsCell.setBorder(Rectangle.NO_BORDER);
-            detailsTable.addCell(detailsCell);
+                detailsCell = new PdfPCell();
+                detailsCell.setBorder(Rectangle.NO_BORDER);
+                detailsTable.addCell(detailsCell);
 
-            detailsCell = new PdfPCell(new Phrase("Nr konta", bold));
-            detailsCell.setBorder(Rectangle.NO_BORDER);
-            detailsTable.addCell(detailsCell);
+                detailsCell = new PdfPCell(new Phrase("Nr konta", bold));
+                detailsCell.setBorder(Rectangle.NO_BORDER);
+                detailsTable.addCell(detailsCell);
 
-            detailsCell = new PdfPCell(new Phrase(invoice.getSeller().getBankAccountNumber(), normal));
-            detailsCell.setBorder(Rectangle.NO_BORDER);
-            detailsTable.addCell(detailsCell);
+                detailsCell = new PdfPCell(new Phrase(invoice.getSeller().getBankAccountNumber(), normal));
+                detailsCell.setBorder(Rectangle.NO_BORDER);
+                detailsTable.addCell(detailsCell);
 
-            detailsCell = new PdfPCell();
-            detailsCell.setBorder(Rectangle.NO_BORDER);
-            detailsTable.addCell(detailsCell);
-        }
+                detailsCell = new PdfPCell();
+                detailsCell.setBorder(Rectangle.NO_BORDER);
+                detailsTable.addCell(detailsCell);
+            }
 
         return detailsTable;
     }
