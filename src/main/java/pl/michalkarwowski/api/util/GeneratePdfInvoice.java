@@ -1,15 +1,11 @@
 package pl.michalkarwowski.api.util;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.*;
 import pl.michalkarwowski.api.models.Client;
 import pl.michalkarwowski.api.models.Invoice;
 import pl.michalkarwowski.api.models.InvoicePosition;
 
-import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
