@@ -43,7 +43,7 @@ public class AccountController {
     @PutMapping("/account/details")
     public ResponseEntity<AppUserDetailsDTO> updateAccountDetails(@Valid @RequestBody AppUserDetailsDTO appUserDetails) {
         AppUserDetails userDetails = applicationUserService.updateUserDetails(appUserDetails);
-        if (appUserDetails == null) {
+        if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).build();
         }
         return new ResponseEntity<>(modelMapper.map(userDetails, AppUserDetailsDTO.class), HttpStatus.OK);
