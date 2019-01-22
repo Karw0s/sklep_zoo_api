@@ -78,41 +78,6 @@ public class GenerateInvoiceNumber {
                 }
 
             }
-        } else {
-//            String[] invoiceNumberSplitted = invoiceNumber.split("/");
-//            int year = Integer.parseInt(invoiceNumberSplitted[2]);
-//            int month = Integer.parseInt(invoiceNumberSplitted[1]);
-//            int invoiceNum = Integer.parseInt(invoiceNumberSplitted[0]);
-//            String monthString = month < 10 ? "0" + Integer.toString(month) : Integer.toString(month);
-//            InvoiceNextNumber result = invoiceNumberList.stream()
-//                    .filter(invoiceNextNumber -> year == invoiceNextNumber.getYear() && month == invoiceNextNumber.getMonth())
-//                    .findAny().orElse(null);
-//            if (result == null) {
-//
-//                InvoiceNextNumber nextNumber = invoiceNumberRepository.save(InvoiceNextNumber.builder()
-//                        .lastInvoiceNumber(invoiceNum + "/" + monthString + "/" + year)
-//                        .nextInvoiceNumber(invoiceNum + 1 + "/" + monthString + "/" + year)
-//                        .month(month)
-//                        .year(year)
-//                        .lastUpdate(new Date())
-//                        .build());
-//                applicationUser.getInvoiceNextNumber().add(nextNumber);
-//                applicationUserService.saveAppUser(applicationUser);
-//                return nextNumber;
-//            } else {
-//                String[] resultSplitedNumber;
-//                if (result.getNextInvoiceNumber() == null) {
-//                    resultSplitedNumber = result.getLastInvoiceNumber().split("/");
-//                } else {
-//                    resultSplitedNumber = result.getNextInvoiceNumber().split("/");
-//                }
-//                if (Integer.parseInt(resultSplitedNumber[0]) < invoiceNum) {
-//                    result.setLastInvoiceNumber(invoiceNumber);
-//                    result.setNextInvoiceNumber(invoiceNum + 1 + "/" + monthString + "/" + year);
-//                    result.setLastUpdate(new Date());
-//                    return invoiceNumberRepository.save(result);
-//                }
-//            }
         }
         return null;
     }

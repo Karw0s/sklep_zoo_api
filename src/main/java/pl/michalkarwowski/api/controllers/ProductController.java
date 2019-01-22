@@ -15,7 +15,6 @@ import pl.michalkarwowski.api.exceptions.InvalidCSVException;
 import pl.michalkarwowski.api.models.Product;
 import pl.michalkarwowski.api.services.ProductService;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.lang.reflect.Type;
