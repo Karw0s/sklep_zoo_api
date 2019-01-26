@@ -19,8 +19,6 @@ public class ClientDTO {
     private Long nipNumber;
     @NotNull
     private AddressDTO address;
-//    @Size(min = 2, message = "firstName should be at least 2 characters")
     private String firstName;
-//    @Size(min = 2, message = "lastName should be at least 2 characters")
     private String lastName;
 }
